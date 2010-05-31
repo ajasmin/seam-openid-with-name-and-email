@@ -27,13 +27,13 @@
                 <rich:toolBarGroup location="right">
                     <s:div rendered="#{!identity.loggedIn}">
                         <h:form>
-                            <h:inputText value="#{openid.id}" styleClass="openid_input"/>
-                            <h:commandButton action="#{openid.login}" value="OpenID Login"/>
+                            <h:inputText value="#{openidax.id}" styleClass="openid_input"/>
+                            <h:commandButton action="#{openidax.login}" value="OpenID Login"/>
                         </h:form>
                     </s:div>
                     <s:div rendered="#{identity.loggedIn}">
                         <h:form>
-                            <h:outputLabel value="#{openid.validatedId}" />
+                            <h:outputLabel value="#{openidax.validatedId}" />
                             <h:commandButton action="#{identity.logout}" value="Logout"/>
                         </h:form>
                     </s:div>
@@ -57,7 +57,12 @@
             </s:div>
 
             <s:div rendered="#{identity.loggedIn}">
-                Congratulations, you have logged into the Wall with an OpenID of <b>#{openid.validatedId}</b>.
+                <p>Congratulations, you have logged into the Wall.</p>
+                <p>OpenID: <b>#{openidax.validatedId}</b></p>
+                <p>Email: <b>#{openidax.email}</b></p>
+                <p>First Name: <b>#{openidax.firstName}</b></p>
+                <p>Last Name: <b>#{openidax.lastName}</b></p>
+                <p>Full Name: <b>#{openidax.fullName}</b></p>
             </s:div>
         </rich:panel>
         

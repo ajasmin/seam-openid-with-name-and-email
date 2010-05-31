@@ -28,7 +28,7 @@
 
     <component name="newpost" class="org.jboss.seam.example.openid.Post">
         <property name="createDate">#{currentDate}</property>
-        <property name="creator">#{openid.validatedId}</property>
+        <property name="creator">#{openidax.displayName}</property>
     </component>
     
     <framework:entity-query name="posts">
@@ -39,11 +39,11 @@
 
 
     <event type="org.jboss.seam.security.loggedOut">
-        <action execute="#{openid.logout}" />
+        <action execute="#{openidax.logout}" />
     </event>
     <!-- not used here -->    
-    <event type="org.jboss.seam.openid.ok">
-        <action execute="#{openid.loginImmediately}"/>
+    <event type="org.jboss.seam.openidax.ok">
+        <action execute="#{openidax.loginImmediately}"/>
         <!-- 
         <action execute="#{redirect.returnToCapturedView}" />
         -->

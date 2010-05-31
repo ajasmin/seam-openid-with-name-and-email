@@ -4,7 +4,7 @@
     no-conversation-view-id="/main.xhtml" login-view-id="/home.xhtml">
 
     <page view-id="/openid.xhtml">
-        <navigation evaluate="#{openid.loginImmediately()}">
+        <navigation evaluate="#{openidax.loginImmediately()}">
             <rule if-outcome="true">
                 <redirect view-id="/main.xhtml">
                     <message>OpenID login successful...</message>
@@ -26,6 +26,11 @@
         </navigation>
     </page>
 
+    <page view-id="*">
+        <navigation from-action="#{identity.logout}">
+            <redirect view-id="/main.xhtml"/>
+        </navigation>
+    </page>
 
     <exception class="javax.faces.application.ViewExpiredException">
         <redirect view-id="/main.xhtml">

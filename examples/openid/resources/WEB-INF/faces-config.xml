@@ -9,6 +9,6 @@
     </application>
 
     <lifecycle>
-        <phase-listener>org.jboss.seam.security.openid.OpenIdPhaseListener</phase-listener>
+	    <phase-listener>org.jboss.seam.example.openid.OpenIdPhaseListenerAx</phase-listener>
     </lifecycle>
 </faces-config>
