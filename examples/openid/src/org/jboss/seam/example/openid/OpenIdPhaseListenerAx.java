@@ -15,6 +15,10 @@ import org.jboss.seam.Component;
 import org.jboss.seam.navigation.Pages;
 import org.jboss.seam.log.*;
 
+/**
+ * Modified version of org.jboss.seam.security.openid.OpenIdPhaseListener
+ * This version has all mentions of the OpenId class replaced by OpenIdAx
+ */
 @SuppressWarnings("serial")
 public class OpenIdPhaseListenerAx
     implements PhaseListener

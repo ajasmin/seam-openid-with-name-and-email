@@ -34,6 +34,10 @@ import org.openid4java.message.AuthSuccess;
 import org.openid4java.message.ax.AxMessage;
 import org.openid4java.message.ax.FetchResponse;
 
+/**
+ * Modified version of org.jboss.seam.security.openid.OpenId
+ * This version ask the OpenID provider to disclose the user name and email address
+ */
 @Name("openidax")
 @Install(precedence=Install.BUILT_IN, classDependencies="org.openid4java.consumer.ConsumerManager")
 @Scope(ScopeType.SESSION)
