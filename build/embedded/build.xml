@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<project name="Embedded Build Utilities" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+
+	<property file="../build.properties" />
+	
+	<property name="seam.dir" value="${basedir}/../../" />
+	<property name="build.dir" value="${seam.dir}/build" />
+	<property name="tmp.dir" value="${seam.dir}/classes" />
+	<property name="lib.dir" value="${seam.dir}/lib" />
+	<import file="../utilities.build.xml" />
+	
+	<property name="maven.settings.xml" value="../settings.xml" />
+	
+	<path id="maven-ant-tasks.classpath" path="${build.dir}/lib/maven-ant-tasks.jar" />
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="maven-ant-tasks.classpath" />
+		
+	<property name="shaded.embedded.jars.dir" value="${tmp.dir}/embedded"/>
+	<property name="embedded.jars.dir" value="${embedded.dir}/output/lib/embedded-jboss/lib" />
+	<property name="embedded.dist.zip" value="${embedded.dir}/embedded-jboss-${embedded.version}.zip" />
+
+	<artifact:remoteRepository id="snapshots.jboss.org" url="dav:https://snapshots.jboss.org/maven2" />
+	<artifact:remoteRepository id="offline.repository.jboss.org" url="file:///${offline.repository.jboss.org}" />
+	
+	<target name="initdav">
+		<artifact:install-provider artifactId="wagon-webdav" version="1.0-beta-2"/>
+	</target>
+	
+	<target name="shadeEmbedded">
+		<delete dir="${shaded.embedded.jars.dir}" failonerror="off"/>
+		<mkdir dir="${shaded.embedded.jars.dir}" />
+		<jar destfile="${shaded.embedded.jars.dir}/hibernate-all.jar" >
+			<zipfileset src="${embedded.jars.dir}/hibernate-all.jar" />
+			<zipfileset src="${lib.dir}/hibernate-search.jar" />
+		</jar>
+		<jar destfile="${shaded.embedded.jars.dir}/thirdparty-all.jar">
+			<zipfileset src="${embedded.jars.dir}/thirdparty-all.jar" />
+			<zipfileset src="${lib.dir}/lucene-core.jar"/>
+			<zipfileset src="${lib.dir}/slf4j-log4j12.jar"/>
+		    <zipfileset src="${lib.dir}/slf4j-api.jar"/>
+		</jar>
+		<copy file="${embedded.jars.dir}/jboss-embedded.jar" todir="${shaded.embedded.jars.dir}" />
+		<copy file="${embedded.jars.dir}/jboss-embedded-all.jar" todir="${shaded.embedded.jars.dir}" />
+	</target>
+	
+	<target name="installEmbedded" depends="shadeEmbedded">
+		<install pom="${embedded.poms.dir}/shaded/jboss-embedded.pom.xml" jar="${shaded.embedded.jars.dir}/jboss-embedded.jar" />
+		<install pom="${embedded.poms.dir}/shaded/jboss-embedded-all.pom.xml" jar="${shaded.embedded.jars.dir}/jboss-embedded-all.jar" />
+		<install pom="${embedded.poms.dir}/shaded/hibernate-all.pom.xml" jar="${shaded.embedded.jars.dir}/hibernate-all.jar" />
+		<install pom="${embedded.poms.dir}/shaded/thirdparty-all.pom.xml" jar="${shaded.embedded.jars.dir}/thirdparty-all.jar" />
+		<install pom="${embedded.poms.dir}/jboss-embedded.pom.xml" jar="${embedded.jars.dir}/jboss-embedded.jar" />
+		<install pom="${embedded.poms.dir}/jboss-embedded-all.pom.xml" jar="${embedded.jars.dir}/jboss-embedded-all.jar" />
+		<install pom="${embedded.poms.dir}/hibernate-all.pom.xml" jar="${embedded.jars.dir}/hibernate-all.jar" />
+		<install pom="${embedded.poms.dir}/thirdparty-all.pom.xml" jar="${embedded.jars.dir}/thirdparty-all.jar" />
+	</target>
+	
+	<target name="deployEmbeddedSnapshot" depends="initdav, shadeEmbedded">
+		<input addproperty="username" 
+			message="JBoss.org username:" />
+		<input addproperty="password" 
+		    message="JBoss.org password:" />
+		<deploy pom="${embedded.poms.dir}/shaded/jboss-embedded.pom.xml" jar="${shaded.embedded.jars.dir}/jboss-embedded.jar" repositoryId="snapshots.jboss.org" unique="false">
+			<authentication username="${username}" password="${password}" />
+		</deploy>
+		<deploy pom="${embedded.poms.dir}/shaded/jboss-embedded-all.pom.xml" jar="${shaded.embedded.jars.dir}/jboss-embedded-all.jar"  repositoryId="snapshots.jboss.org" unique="false">
+			<authentication username="${username}" password="${password}" />
+		</deploy>
+		<deploy pom="${embedded.poms.dir}/shaded/hibernate-all.pom.xml" jar="${shaded.embedded.jars.dir}/hibernate-all.jar"  repositoryId="snapshots.jboss.org" unique="false">
+			<authentication username="${username}" password="${password}" />
+		</deploy>
+		<deploy pom="${embedded.poms.dir}/shaded/thirdparty-all.pom.xml" jar="${shaded.embedded.jars.dir}/thirdparty-all.jar"  repositoryId="snapshots.jboss.org" unique="false">
+			<authentication username="${username}" password="${password}" />
+		</deploy>
+		<deployWithAttachment pom="${embedded.poms.dir}/jboss-embedded.pom.xml" jar="${embedded.jars.dir}/jboss-embedded.jar" repositoryId="snapshots.jboss.org" attachment="${embedded.dir}/embedded-jboss-${embedded.version}.zip" unique="false">
+			<authentication username="${username}" password="${password}" />
+		</deployWithAttachment>
+		<deploy pom="${embedded.poms.dir}/jboss-embedded-all.pom.xml" jar="${embedded.jars.dir}/jboss-embedded-all.jar"  repositoryId="snapshots.jboss.org" unique="false">
+			<authentication username="${username}" password="${password}" />
+		</deploy>
+		<deploy pom="${embedded.poms.dir}/hibernate-all.pom.xml" jar="${embedded.jars.dir}/hibernate-all.jar"  repositoryId="snapshots.jboss.org" unique="false">
+			<authentication username="${username}" password="${password}" />
+		</deploy>
+		<deploy pom="${embedded.poms.dir}/thirdparty-all.pom.xml" jar="${embedded.jars.dir}/thirdparty-all.jar"  repositoryId="snapshots.jboss.org" unique="false">
+			<authentication username="${username}" password="${password}" />
+		</deploy>
+	</target>
+   
+   <target name="deployEmbeddedRelease" depends="initdav, shadeEmbedded">
+   	  <echo>Using Jars from ${embedded.jars.dir}</echo>
+      <deploy pom="${embedded.poms.dir}/shaded/jboss-embedded.pom.xml" jar="${shaded.embedded.jars.dir}/jboss-embedded.jar" repositoryId="offline.repository.jboss.org" unique="false"/>
+      <deploy pom="${embedded.poms.dir}/shaded/jboss-embedded-all.pom.xml" jar="${shaded.embedded.jars.dir}/jboss-embedded-all.jar"  repositoryId="offline.repository.jboss.org"  unique="false"/>
+      <deploy pom="${embedded.poms.dir}/shaded/hibernate-all.pom.xml" jar="${shaded.embedded.jars.dir}/hibernate-all.jar"  repositoryId="offline.repository.jboss.org"  unique="false"/>
+      <deploy pom="${embedded.poms.dir}/shaded/thirdparty-all.pom.xml" jar="${shaded.embedded.jars.dir}/thirdparty-all.jar"  repositoryId="offline.repository.jboss.org"  unique="false"/>
+      <deployWithAttachment pom="${embedded.poms.dir}/jboss-embedded.pom.xml" jar="${embedded.jars.dir}/jboss-embedded.jar" repositoryId="offline.repository.jboss.org" attachment="${embedded.dist.zip}"  unique="false"/>
+      <deploy pom="${embedded.poms.dir}/jboss-embedded-all.pom.xml" jar="${embedded.jars.dir}/jboss-embedded-all.jar"  repositoryId="offline.repository.jboss.org"  unique="false"/>
+      <deploy pom="${embedded.poms.dir}/hibernate-all.pom.xml" jar="${embedded.jars.dir}/hibernate-all.jar"  repositoryId="offline.repository.jboss.org"  unique="false"/>
+      <deploy pom="${embedded.poms.dir}/thirdparty-all.pom.xml" jar="${embedded.jars.dir}/thirdparty-all.jar"  repositoryId="offline.repository.jboss.org"  unique="false"/>
+   </target>
+	
+</project>

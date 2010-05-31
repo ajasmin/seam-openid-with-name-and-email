@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+<project name="Seam2 Build Utilities" basedir="." default="help" xmlns:artifact="urn:maven-artifact-ant">
+
+	<property file="default.build.properties" />
+	<property file="build.properties" />
+	
+	<property name="seam.dir" value="${basedir}/../" />
+	<import file="common.build.xml" />
+	
+	<property name="embedded.jars.dir" value="${tmp.dir}/embedded"/>
+	<property name="original.embedded.jars.dir" value="${embedded.dir}/output/lib/embedded-jboss/lib" />
+
+	<artifact:remoteRepository id="snapshots.jboss.org" url="dav:https://snapshots.jboss.org/maven2" />
+	<artifact:remoteRepository id="offline.repository.jboss.org" url="file:///${offline.repository.jboss.org}" />
+	
+	<target name="deployLocal">
+		<pomfile name="pom.file" value="${pom}" />
+		<deployLocal pom="${pom.file}" jar="${jar}" />
+	</target>
+	
+	<target name="deploySnapshot" description="Deploy a pom and jar to snapshots.jboss.org" depends="initdav">
+		<pomfile name="pom.file" value="${pom}" />
+		<deploy pom="${pom.file}" jar="${jar}" repositoryId="snapshots.jboss.org" />
+	</target>
+
+	<target name="deployRelease" description="Deploy a jar (generating the pom) to snapshots.jboss.org" depends="initdav">
+		<pomfile name="pom.file" value="${pom}" />
+		<deploy pom="${pom.file}" jar="${jar}" repositoryId="offline.repository.jboss.org" />
+	</target>
+   
+   <target name="deployReleaseWithSourcesAndJavaDoc" description="Deploy a jar (generating the pom), source jar and javadoc jar to the offline repository" depends="initdav">
+       <pomfile name="pom.file" value="${pom}" />
+       <deployWithSourcesAndJavadoc pom="${pom.file}" jar="${jar}" 
+                                    srcjar="${srcjar}" docjar="${docjar}"
+                                    repositoryId="offline.repository.jboss.org" />
+    </target>
+	
+	<target name="releaseSeam" description="Deploy Seam and JBoss EL to your local copy of repository.jboss.org" depends="initpoms">
+		<fail unless="offline.repository.jboss.org" message="Please set the offline.repository.jboss.org property"/>
+		<deploy pom="${root.pom}" repositoryId="offline.repository.jboss.org"/>
+		<deploy pom="${parent.pom}" repositoryId="offline.repository.jboss.org" />
+		<deployWithSources pom="${core.pom}" jar="${lib.dir}/jboss-seam.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-sources.jar" />
+		<deployWithSources pom="${debug.pom}" jar="${lib.dir}/jboss-seam-debug.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-debug-sources.jar"/>
+		<deployWithSources pom="${gen.pom}" jar="${lib.dir}/gen/jboss-seam-gen.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/gen/src/jboss-seam-gen-sources.jar"/>
+		<deployWithSources pom="${ioc.pom}" jar="${lib.dir}/jboss-seam-ioc.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-ioc-sources.jar"/>
+		<deployWithSources pom="${mail.pom}" jar="${lib.dir}/jboss-seam-mail.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-mail-sources.jar"/>
+		<deployWithSources pom="${pdf.pom}" jar="${lib.dir}/jboss-seam-pdf.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-pdf-sources.jar"/>
+		<deployWithSources pom="${excel.pom}" jar="${lib.dir}/jboss-seam-excel.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-excel-sources.jar"/>
+		<deployWithSources pom="${rss.pom}" jar="${lib.dir}/jboss-seam-rss.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-rss-sources.jar"/>
+		<deployWithSources pom="${remoting.pom}" jar="${lib.dir}/jboss-seam-remoting.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-remoting-sources.jar"/>
+		<deployWithSources pom="${ui.pom}" jar="${lib.dir}/jboss-seam-ui.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-ui-sources.jar"/>
+		<deployWithSources pom="${jul.pom}" jar="${lib.dir}/interop/jboss-seam-jul.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/interop/src/jboss-seam-jul-sources.jar"/>
+		<deployWithSources pom="${resteasy.pom}" jar="${lib.dir}/jboss-seam-resteasy.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-resteasy-sources.jar"/>
+	    <deployWithSources pom="${wicket.pom}" jar="${lib.dir}/jboss-seam-wicket.jar" repositoryId="offline.repository.jboss.org" srcjar="${lib.dir}/src/jboss-seam-wicket-sources.jar"/>
+		<deployExample name="booking" repositoryId="offline.repository.jboss.org"/>
+		<deployExampleNoDs name="numberguess" repositoryId="offline.repository.jboss.org"/>
+		<deployExample name="dvdstore" path="${seam.dir}/examples/dvdstore" repositoryId="offline.repository.jboss.org"/>
+
+	</target>
+	
+	<target name="deployLocalPom">
+		<deployLocal pom="${pom}" />
+	</target>
+
+	<target name="deployLocalJar" >
+		<deployLocal jar="${jar}" />
+	</target>
+
+	<!--<target name="installProfiles" >
+		<installProfile pom="profiles/seam-ajax.pom.xml" />
+		<installProfile pom="profiles/seam-async-timer-quartz.pom.xml" />
+		<installProfile pom="profiles/seam-cache.pom.xml" />
+		<installProfile pom="profiles/seam-captcha.pom.xml" />
+		<installProfile pom="profiles/seam-ejb3.pom.xml" />
+		<installProfile pom="profiles/seam-facelets.pom.xml" />
+		<installProfile pom="profiles/seam-gwt.pom.xml" />
+		<installProfile pom="profiles/seam-jpa.pom.xml" />
+		<installProfile pom="profiles/seam-jpdl.pom.xml" />
+		<installProfile pom="profiles/seam-jpdl-tomcat.pom.xml" />
+		<installProfile pom="profiles/seam-richfaces.pom.xml" />
+		<installProfile pom="profiles/seam-rules.pom.xml" />
+		<installProfile pom="profiles/seam-search.pom.xml" />
+		<installProfile pom="profiles/seam-spring.pom.xml" />
+		<installProfile pom="profiles/seam-urlrewrite.pom.xml" />
+	</target>-->
+
+	<target name="help" description="Show help">
+		<echo>Run ant -p</echo>
+		<echo />
+		<echo>You can set the location of your checked out maven repositoy for the offline targets in build.properties</echo>
+		<echo />
+		<echo>Examples:</echo>
+		<echo>---------</echo>
+		<echo />
+		<echo>Deploy both a pom and the associated jar: </echo>
+		<echo>   ant deploySnapshot -Dpom=jboss-el.pom.xml -Djar=jboss-el.jar</echo>
+		<echo>Deploy a snapshot jar and generate a basic pom:</echo>
+		<echo>   ant deploySnapshotJar -Djar=jboss-el.jar</echo>
+	</target>
+
+	<macrodef name="installProfile">
+		<attribute name="pom" />
+		<sequential>
+			<pomfile name="pomfile" value="@{pom}" />
+			<install pom="${pomfile}" />
+		</sequential>
+	</macrodef>
+
+	<target name="offlineDependencies" description="Build an offline snapshot of all depndencies required by Seam" depends="initpoms">
+		<delete dir="${tmp.dir}/tmp-repository" />
+		
+		<copy tofile="${tmp.dir}/poms/settings.xml">
+			<fileset file="${build.dir}/settings.xml" />
+			<filterset>
+				<filter token="tmp.dir" value="${tmp.dir}" />
+				<filter token="build.dir" value="${build.dir}" />
+			</filterset>
+		</copy>
+
+		<artifact:remoteRepository id="tmp.repository" url="file://${tmp.dir}/tmp-repository" />
+		
+		<deploySeam repositoryId="tmp.repository" />
+
+		<offline pom="core.pom" repository="${offline.repository.jboss.org}" />
+		<offline pom="ui.pom" repository="${offline.repository.jboss.org}" />
+		<offline pom="remoting.pom" repository="${offline.repository.jboss.org}" />
+		<offline pom="pdf.pom" repository="${offline.repository.jboss.org}" />
+		<offline pom="excel.pom" repository="${offline.repository.jboss.org}" />
+		<offline pom="rss.pom" repository="${offline.repository.jboss.org}" />
+		<offline pom="mail.pom" repository="${offline.repository.jboss.org}" />
+		<offline pom="ioc.pom" repository="${offline.repository.jboss.org}" />
+		<offline pom="gen.pom" repository="${offline.repository.jboss.org}" />
+		<offline pom="debug.pom" repository="${offline.repository.jboss.org}" />
+	</target>
+	
+	<target name="shadeEmbedded">
+		<delete dir="${embedded.jars.dir}" failonerror="off"/>
+		<mkdir dir="${embedded.jars.dir}" />
+		<jar destfile="${embedded.jars.dir}/hibernate-all.jar" >
+			<zipfileset src="${original.embedded.jars.dir}/hibernate-all.jar" />
+			<zipfileset src="${lib.dir}/hibernate-search.jar" />
+		</jar>
+		<jar destfile="${embedded.jars.dir}/thirdparty-all.jar">
+			<zipfileset src="${original.embedded.jars.dir}/thirdparty-all.jar" />
+			<zipfileset src="${lib.dir}/lucene-core.jar"/>
+		</jar>
+		<copy file="${original.embedded.jars.dir}/jboss-embedded.jar" todir="${embedded.jars.dir}" />
+		<copy file="${original.embedded.jars.dir}/jboss-embedded-all.jar" todir="${embedded.jars.dir}" />
+	</target>
+	
+	<target name="installEmbedded" depends="shadeEmbedded">
+		<install pom="${embedded.poms.dir}/jboss-embedded.pom.xml" jar="${embedded.jars.dir}/jboss-embedded.jar" />
+		<install pom="${embedded.poms.dir}/jboss-embedded-all.pom.xml" jar="${embedded.jars.dir}/jboss-embedded-all.jar" />
+		<install pom="${embedded.poms.dir}/hibernate-all.pom.xml" jar="${embedded.jars.dir}/hibernate-all.jar" />
+		<install pom="${embedded.poms.dir}/thirdparty-all.pom.xml" jar="${embedded.jars.dir}/thirdparty-all.jar" />
+	</target>
+	
+	<target name="deployEmbeddedSnapshot" depends="initdav, shadeEmbedded">
+		<deployWithAttachment pom="${embedded.poms.dir}/jboss-embedded.pom.xml" jar="${embedded.jars.dir}/jboss-embedded.jar" repositoryId="snapshots.jboss.org" attachment="${embedded.dir}/embedded-jboss-${embedded.version}.zip" unique="false" />
+		<deploy pom="${embedded.poms.dir}/jboss-embedded-all.pom.xml" jar="${embedded.jars.dir}/jboss-embedded-all.jar"  repositoryId="snapshots.jboss.org" unique="false" />
+		<deploy pom="${embedded.poms.dir}/hibernate-all.pom.xml" jar="${embedded.jars.dir}/hibernate-all.jar"  repositoryId="snapshots.jboss.org" unique="false" />
+		<deploy pom="${embedded.poms.dir}/thirdparty-all.pom.xml" jar="${embedded.jars.dir}/thirdparty-all.jar"  repositoryId="snapshots.jboss.org" unique="false" />
+	</target>
+	
+	<target name="snapshotExample" depends="initdav">
+		<deployExample name="${name}" repositoryId="snapshots.jboss.org"/>
+	</target>
+	
+	<target name="installExample">
+		<installExample name="${name}"/>
+	</target>
+	
+	<target name="dependencyReport" depends="initpoms" description="Produce a dependency tree for the given module">
+		<fail unless="module" message="Must specify module e.g. core"/>
+		<dependencyReport module="${module}" />
+		<echo>Dependency Tree for ${module}</echo>
+	    <echo>-----------------------------</echo>
+		<concat>
+			<fileset file="${tmp.dir}/poms/${module}-dependency-report.txt"/>
+		</concat>
+	</target>
+	
+	<macrodef name="offline">
+		<attribute name="pom" />
+		<attribute name="repository" />
+		<sequential>
+			<maven basedir="${tmp.dir}/poms" target="dependency:go-offline" pom="@{pom}">
+                <arg line="-f @{pom}" />
+				<arg line="-s settings.xml" />
+				<arg line="-Dmaven.repo.local=@{repository}" />
+			</maven>
+		</sequential>
+	</macrodef>
+	
+</project>

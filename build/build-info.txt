@@ -1,0 +1,23 @@
+* Build dist, run tests and create eclipse classpath
+
+The easiest approach is to look in the files for a similar module and just copy/paste/modify.
+
+/build.xml                   Builds dist and examples and runs unit tests.
+/build/build.xml             Deploys jars to local maven repo
+/build/classpath.tmpl        Classpath entries used when running ant eclipseclasspath
+/build/ci.build.xml          Publishes seam to snapshot repo (?)
+/build/root.pom.xml          Contains all maven dependencies. Versions go here.
+/build/yourMod.pom.xml       Pom for the module with appropriate dependencies. All deps must be in 
+                             http://repository.jboss.com/maven2/
+
+
+* Build examples
+/examples/build.xml          "Mother" ant script for the examples. Most(all?) buils example scripts 
+                             import this script. 
+/examples/yourMod/build.xml  Essentially just sets some properties. Then the mother script does it all
+
+
+
+* Add docs
+Put your doc in /doc/Seam_Reference_Guide/en-US (or appropriate language) and add it to
+/doc/Seam_Reference_Guide/en-US/master.xml

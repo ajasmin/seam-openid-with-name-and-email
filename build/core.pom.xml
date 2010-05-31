@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jboss.seam</groupId>
+  <artifactId>@artifact.name@</artifactId>
+  <parent>
+    <groupId>org.jboss.seam</groupId>
+    <artifactId>parent</artifactId>
+    <version>@seam.version@</version>
+  </parent>
+  <packaging>ejb</packaging>
+
+  <!-- See parent pom for notes on how to declare dependencies -->
+
+  <dependencies>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+   <!-- Maven's "nearest" dependency resolution doesn't take into account parent dependency management! -->
+   <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <optional>true</optional>
+   </dependency>
+    
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-annotations</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-search</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.portlet</groupId>
+      <artifactId>portlet-api</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.xml.ws</groupId>
+      <artifactId>jaxws-api</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.jws</groupId>
+      <artifactId>jsr181-api</artifactId>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>javax.xml.soap</groupId>
+      <artifactId>saaj-api</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant-antlr</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+   <dependency>
+	  <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- Order matters of jboss:jboss-cache and org.jboss.cache:jbosscache-core -->
+
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-cache</artifactId>
+      <optional>true</optional>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.jboss.cache</groupId>
+      <artifactId>jbosscache-core</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+
+    
+    <!-- This is actually a dep of jboss-cache, but it doesn't declare it -->
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-system</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <!-- This is actually a dep of jboss-cache, but it doesn't declare it -->
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-jmx</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <!-- This is actually a dep of jboss-cache, but it doesn't declare it -->
+    <dependency>
+      <groupId>jgroups</groupId>
+      <artifactId>jgroups</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.buni.meldware</groupId>
+      <artifactId>meldware-mailjmx</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.buni.meldware</groupId>
+      <artifactId>meldware-mailapi</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-core</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-compiler</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      	<groupId>org.drools</groupId>
+        <artifactId>drools-templates</artifactId>
+        <optional>true</optional>
+    </dependency>
+    
+    
+     <dependency>
+     	<groupId>org.drools</groupId>
+     	<artifactId>drools-decisiontables</artifactId>
+     	<optional>true</optional>
+     	<exclusions>
+         	<exclusion>
+            	<groupId>jexcelapi</groupId>
+      			<artifactId>jxl</artifactId>
+          	</exclusion>
+        </exclusions>
+     </dependency>
+     
+     <dependency>
+      	<groupId>xstream</groupId>
+  		<artifactId>xstream</artifactId>      	
+      </dependency>
+      
+      <dependency>
+      	<groupId>xpp3</groupId>
+  		<artifactId>xpp3_min</artifactId>      	
+      </dependency>
+ 	 	
+	 <dependency>
+		<groupId>net.sourceforge.jexcelapi</groupId>
+		<artifactId>jxl</artifactId>
+		<optional>true</optional>
+	 </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${version.testng}</version>
+      <optional>true</optional>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.dbunit</groupId>
+      <artifactId>dbunit</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-jpdl</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+        <groupId>org.beanshell</groupId>
+        <artifactId>bsh</artifactId>
+        <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.jboss.el</groupId>
+      <artifactId>jboss-el</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.seam.embedded</groupId>
+      <artifactId>jboss-embedded-api</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>quartz</groupId>
+      <artifactId>quartz</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-impl</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.tuckey</groupId>
+      <artifactId>urlrewritefilter</artifactId>
+      <optional>true</optional>
+      <scope>runtime</scope>
+    </dependency>
+    
+    <dependency>
+       <groupId>oswego-concurrent</groupId>
+       <artifactId>concurrent</artifactId>
+       <optional>true</optional>
+    </dependency>
+
+    <dependency>
+       <groupId>hsqldb</groupId>
+       <artifactId>hsqldb</artifactId>
+       <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+       <groupId>org.jboss</groupId>
+       <artifactId>jboss-vfs</artifactId>
+       <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-common-core</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+        <groupId>org.openid4java</groupId>
+        <artifactId>openid4java</artifactId>
+        <optional>true</optional>
+    </dependency>
+    
+  </dependencies>
+
+</project>

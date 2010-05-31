@@ -1,0 +1,377 @@
+<?xml version="1.0"?>
+<!-- Ant build file containing build related common properties, definitions and targets -->
+<!-- Properties used:
+   build.dir - root of Seam build system
+   version
+   patchlevel
+   mavenised - whether to use a mavenised dependency management system. 
+               If false a ${seam.dir}/lib dir and the ${seam.dir}/jboss-seam*.jar
+               must be present.
+-->
+<project basedir="." xmlns:artifact="urn:maven-artifact-ant">
+
+	<tstamp />
+	
+	<property name="seam.dir" value=".." />
+	
+	<property name="build.dir" value="${seam.dir}/build" />
+	<property name="tmp.dir" value="${seam.dir}/classes" />
+	<property name="lib.dir" value="${seam.dir}/lib" />
+	<property name="endorsed.dir" value="${tmp.dir}/endorsed" />
+	
+	<!-- Set the location of the maven settings.xml file -->
+	
+	<property name="maven.settings.xml" location="${build.dir}/settings.xml" />
+  
+    <property name="embedded.version" value="beta3.SP9" />
+
+	<import file="${build.dir}/utilities.build.xml" />
+	
+	<path id="maven-ant-tasks.classpath" path="${build.dir}/lib/maven-ant-tasks.jar" />
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="maven-ant-tasks.classpath" />
+	
+	<!-- If build.properties doesn't exist, create it by copying build.properties.sample -->
+	<condition property="copy.default.properties">
+		<and>
+			<available file="${build.dir}/sample.build.properties" />
+			<not>
+				<available file="${seam.dir}/build.properties" />
+			</not>
+		</and>
+	</condition>
+	
+	<copy todir="${seam.dir}">
+		<fileset dir="${build.dir}">
+			<include name="sample.build.properties" if="copy.default.properties" />
+		</fileset>
+		<mapper type="glob" from="sample.build.properties" to="build.properties" />
+	</copy>
+	
+	<!-- User set properties, order of this and default properties is important! -->
+	<property file="${seam.dir}/build.properties" />
+	
+	<!-- Load default build properties -->
+	<property file="${build.dir}/default.build.properties" />
+
+	<!-- Construct the version numbers -->
+	<property name="version" value="${major.version}${minor.version}" />
+	<property name="level" value="${patchlevel}${qualifier}" />
+	
+	<!-- Set the version if not set in build.properties -->
+	<condition property="version" value="${DSTAMP}">
+		<not>
+			<isset property="version" />
+		</not>
+	</condition>
+	<condition property="level" value="${TSTAMP}">
+		<not>
+			<isset property="level" />
+		</not>
+	</condition>
+
+	<property name="complete.version" value="${version}${level}" />
+	
+	<condition property="mavenized.property">
+		<not>
+			<equals arg1="${mavenized}" arg2="false" />
+		</not>
+	</condition>
+
+	<property name="maven.dir" value="${build.dir}/maven" />
+  
+    <property name="coverage.dir" value="${seam.dir}/coverage-output" />
+    <property name="coverage.ec" value="${coverage.dir}/coverage.ec" />
+
+	<artifact:remoteRepository id="repository.jboss.org" url="http://repository.jboss.org/maven2" />
+	
+
+	<target name="initcopy">
+		<mkdir dir="${lib.dir}" />
+	</target>
+
+	<target name="initpoms" unless="initpomsdone">
+		<!-- POMs -->
+		<echo>Setting up dependencies</echo>
+		<pomfile name="root.pom" value="${build.dir}/root.pom.xml" />
+		<install pom="${root.pom}" />
+		<pomfile name="parent.pom" value="${build.dir}/parent.pom.xml" />
+		<install pom="${parent.pom}" />
+		<pomfile name="core.pom" value="${build.dir}/core.pom.xml" artifactName="jboss-seam" />
+		<pomfile name="core.wls.pom" value="${build.dir}/core.pom.xml" artifactName="jboss-seam-wls-compatible" />
+		<pomfile name="debug.pom" value="${build.dir}/debug.pom.xml" />
+		<pomfile name="wicket.pom" value="${build.dir}/wicket.pom.xml" />
+		<pomfile name="jul.pom" value="${build.dir}/jul.pom.xml" />
+		<pomfile name="resteasy.pom" value="${build.dir}/resteasy.pom.xml" />
+		<pomfile name="gen.pom" value="${build.dir}/gen.pom.xml" />
+		<pomfile name="ioc.pom" value="${build.dir}/ioc.pom.xml" />
+		<pomfile name="mail.pom" value="${build.dir}/mail.pom.xml" />
+		<pomfile name="pdf.pom" value="${build.dir}/pdf.pom.xml" />
+		<pomfile name="excel.pom" value="${build.dir}/excel.pom.xml" />
+		<pomfile name="rss.pom" value="${build.dir}/rss.pom.xml" />
+		<pomfile name="remoting.pom" value="${build.dir}/remoting.pom.xml" />
+		<pomfile name="ui.pom" value="${build.dir}/ui.pom.xml" />
+		<pomfile name="docs.pom" value="${build.dir}/docs.pom.xml" />
+		<property name="initpomsdone" value="true" />
+	</target>
+
+	<target name="copyseamdependencies" if="mavenized.property" unless="copyseamdependenciesdone" depends="initcopy, initpoms">
+		<copyDependencies id="core" pom="${core.pom}" todir="${lib.dir}" scope="runtime" />
+		<copyDependencies id="debug" pom="${debug.pom}" todir="${lib.dir}" scope="runtime" />
+		<copyDependencies id="wicket" pom="${wicket.pom}" todir="${lib.dir}" scope="runtime" />
+		<copyDependencies id="ioc" pom="${ioc.pom}" todir="${lib.dir}" scope="runtime" />
+		<copyDependencies id="mail" pom="${mail.pom}" todir="${lib.dir}" scope="runtime" />
+		<copyDependencies id="pdf" pom="${pdf.pom}" todir="${lib.dir}" scope="runtime" />
+		<copyDependencies id="excel" pom="${excel.pom}" todir="${lib.dir}" scope="runtime" />
+		<copyDependencies id="remoting" pom="${remoting.pom}" todir="${lib.dir}" scope="runtime" />
+		<copyDependencies id="resteasy" pom="${resteasy.pom}" todir="${lib.dir}" scope="runtime" />
+		<copyDependencies id="ui" pom="${ui.pom}" todir="${lib.dir}" scope="runtime" />
+	   <copyDependencies id="gen" pom="${gen.pom}" todir="${lib.dir}/gen" scope="runtime" />
+		<copyDependencies id="core" pom="${core.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="debug" pom="${debug.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="wicket" pom="${wicket.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="ioc" pom="${ioc.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="mail" pom="${mail.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="pdf" pom="${pdf.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="excel" pom="${excel.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="rss" pom="${rss.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="remoting" pom="${remoting.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="resteasy" pom="${resteasy.pom}" todir="${lib.dir}" scope="compile" />
+		<copyDependencies id="ui" pom="${ui.pom}" todir="${lib.dir}" scope="compile" />
+	   <copyDependencies id="gen" pom="${gen.pom}" todir="${lib.dir}/gen" scope="compile" />
+		<property name="copyseamdependenciesdone" value="true" />
+	</target>
+
+	<target name="copyseam" if="mavenized.property" unless="copyseamdone" depends="initcopy, initpoms">
+		<copyInlineDependencies id="seam" scope="compile" todir="${lib.dir}">
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-debug" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-wicket" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-ioc" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-mail" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-pdf" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-remoting" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-resteasy" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-ui" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-excel" version="${complete.version}" />
+			<dependency groupId="org.jboss.seam" artifactId="jboss-seam-rss" version="${complete.version}" />
+		</copyInlineDependencies>
+		<property name="copyseamdone" value="true" />
+	</target>
+
+	<target name="copyjbossembedded" if="mavenized.property" unless="copyjbossembeddeddone" depends="initpoms, initcopy">
+		<copyInlineDependencies id="embeddedjboss" scope="compile" todir="${lib.dir}/test">
+			<dependency groupId="org.jboss.seam.embedded" artifactId="jboss-embedded-all" version="${embedded.version}">
+              <!-- Exclude the embedded api, its a dep of Seam core -->
+              <exclusion groupId="org.jboss.seam.embedded" artifactId="jboss-embedded-api" />
+            </dependency>
+			<dependency groupId="org.jboss.seam.embedded" artifactId="thirdparty-all" version="${embedded.version}" />
+			<dependency groupId="org.jboss.seam.embedded" artifactId="hibernate-all" version="${embedded.version}" />
+			
+			<remoteRepository refId="repository.jboss.org" />
+			<remoteRepository id="snapshots.jboss.org" url="http://snapshots.jboss.org/maven2" />
+		</copyInlineDependencies>
+		<property name="copyjbossembeddeddone" value="true" />
+	</target>
+	
+	<target name="getemma">
+		<inlineDependencies id="emma" scope="runtime">
+			<dependency groupId="emma" artifactId="emma" version="2.0.5312" />
+			<dependency groupId="emma" artifactId="emma_ant" version="2.0.5312" />
+		</inlineDependencies>
+	</target>
+
+	<macrodef name="deploySeam">
+		<attribute name="repositoryId" />
+		<sequential>
+			<deploy pom="${root.pom}" repositoryId="@{repositoryId}" />
+			<deploy pom="${parent.pom}" repositoryId="@{repositoryId}" />
+			<deploy pom="${core.pom}" jar="${seam.dir}/lib/jboss-seam.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${ui.pom}" jar="${seam.dir}/lib/jboss-seam-ui.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${remoting.pom}" jar="${seam.dir}/lib/jboss-seam-remoting.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${resteasy.pom}" jar="${seam.dir}/lib/jboss-seam-resteasy.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${pdf.pom}" jar="${seam.dir}/lib/jboss-seam-pdf.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${excel.pom}" jar="${seam.dir}/lib/jboss-seam-excel.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${rss.pom}" jar="${seam.dir}/lib/jboss-seam-rss.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${mail.pom}" jar="${seam.dir}/lib/jboss-seam-mail.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${ioc.pom}" jar="${seam.dir}/lib/jboss-seam-ioc.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${gen.pom}" jar="${seam.dir}/lib/jboss-seam-gen.jar" repositoryId="@{repositoryId}" />
+			<deploy pom="${debug.pom}" jar="${seam.dir}/lib/jboss-seam-debug.jar" repositoryId="@{repositoryId}" />
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="deployExample">
+	   <attribute name="name" />
+	   <attribute name="path" default="${seam.dir}/examples/@{name}" />
+	   <attribute name="repositoryId" />
+		<attribute name="type" default="ear" />
+	   <sequential>
+	      <ant dir="@{path}" target="archive" inheritall="false">
+	         <propertyset>
+	            <propertyref name="initpomsdone" />
+	            <propertyref name="copyseamdone" />
+	            <propertyref name="copyseamdependenciesdone" />
+	            <propertyref name="copyjbossembeddeddone" />
+	            <propertyref name="core.pom" />
+	            <propertyref name="root.pom" />
+	            <propertyref name="parent.pom" />
+	            <propertyref name="ui.pom" />
+	            <propertyref name="remoting.pom" />
+	            <propertyref name="resteasy.pom" />
+	            <propertyref name="pdf.pom" />
+	            <propertyref name="rss.pom" />
+	            <propertyref name="gen.pom" />
+	            <propertyref name="excel.pom" />
+	            <propertyref name="ioc.pom" />
+	            <propertyref name="mail.pom" />
+	            <propertyref name="debug.pom" />
+	            <propertyref name="wicket.pom" />
+	            <propertyref name="testng.jvmargs" />
+	            <propertyref name="maven.settings.xml" />
+	         </propertyset>
+	      </ant>
+	      <pomfile name="example.pom" value="@{path}/pom.xml" />
+	      <artifact:deploy file="@{path}/dist/jboss-seam-@{name}.ear"
+	         uniqueVersion="false" settingsFile="${maven.settings.xml}">
+	         <pom file="${example.pom}" settingsFile="${maven.settings.xml}" />
+	         <attach file="@{path}/resources/jboss-seam-@{name}-ds.xml"
+	            classifier="ds" type="xml" />
+	         <remoteRepository refid="@{repositoryId}" />
+	      </artifact:deploy>
+	   </sequential>
+	</macrodef>
+
+	<macrodef name="installExample">
+		<attribute name="name" />
+       	<attribute name="path" default="${seam.dir}/examples/@{name}" />
+       	<sequential>
+           <ant dir="@{path}" target="archive" inheritall="false">
+           		<propertyset>
+					<propertyref name="initpomsdone" />
+					<propertyref name="copyseamdone" />
+					<propertyref name="copyseamdependenciesdone" />
+					<propertyref name="copyjbossembeddeddone" />
+					<propertyref name="core.pom" />
+					<propertyref name="root.pom" />
+					<propertyref name="parent.pom" />
+					<propertyref name="ui.pom" />
+					<propertyref name="remoting.pom" />
+           	   <propertyref name="resteasy.pom" />
+					<propertyref name="gen.pom" />
+					<propertyref name="pdf.pom" />
+					<propertyref name="excel.pom" />
+					<propertyref name="ioc.pom" />
+					<propertyref name="mail.pom" />
+					<propertyref name="debug.pom" />
+           	   <propertyref name="wicket.pom" />
+					<propertyref name="testng.jvmargs"/>
+				</propertyset>
+           	</ant>
+       		<pomfile name="example.pom" value="@{path}/pom.xml" />
+       		<artifact:install file="@{path}/dist/jboss-seam-@{name}.ear">
+       			<pom file="${example.pom}" />
+       		    <attach file="@{path}/resources/jboss-seam-@{name}-ds.xml" classifier="ds" type="xml" />
+       		</artifact:install>
+       	</sequential>
+	</macrodef>
+	
+	<macrodef name="deployExampleNoDs">
+	   <attribute name="name" />
+	   <attribute name="path" default="${seam.dir}/examples/@{name}" />
+	   <attribute name="repositoryId" />
+	   <attribute name="type" default="ear" />
+		<attribute name="distdir" default="dist" />
+	   <sequential>
+	      <ant dir="@{path}" target="archive" inheritall="false">
+	         <propertyset>
+	            <propertyref name="initpomsdone" />
+	            <propertyref name="copyseamdone" />
+	            <propertyref name="copyseamdependenciesdone" />
+	            <propertyref name="copyjbossembeddeddone" />
+	            <propertyref name="core.pom" />
+	            <propertyref name="root.pom" />
+	            <propertyref name="parent.pom" />
+	            <propertyref name="ui.pom" />
+	            <propertyref name="remoting.pom" />
+	            <propertyref name="resteasy.pom" />
+	            <propertyref name="gen.pom" />
+	            <propertyref name="pdf.pom" />
+	            <propertyref name="rss.pom" />
+	            <propertyref name="excel.pom" />
+	            <propertyref name="ioc.pom" />
+	            <propertyref name="mail.pom" />
+	            <propertyref name="debug.pom" />
+	            <propertyref name="wicket.pom" />
+	            <propertyref name="testng.jvmargs" />
+	            <propertyref name="maven.settings.xml" />
+	         </propertyset>
+	      </ant>
+	      <pomfile name="example.pom" value="@{path}/pom.xml" />
+	      <artifact:deploy file="@{path}/@{distdir}/jboss-seam-@{name}.@{type}"
+	         uniqueVersion="false" settingsFile="${maven.settings.xml}">
+	         <pom file="${example.pom}" settingsFile="${maven.settings.xml}" />
+	         <remoteRepository refid="@{repositoryId}" />
+	      </artifact:deploy>
+	   </sequential>
+	</macrodef>
+
+	<macrodef name="dependencyReport">
+		<attribute name="module" />
+		<attribute name="pom" default="${tmp.dir}/poms/@{module}.pom" />
+		<attribute name="output" default="${tmp.dir}/poms/@{module}-dependency-report.txt" />
+		<sequential>
+			<maven target="-f @{pom} dependency:tree" basedir="${seam.dir}">
+				<arg line="-DoutputFile=@{output}" />
+				<arg line="-q" />
+			</maven>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="outputDependencyReport">
+		<attribute name="module" />
+		<attribute name="output" default="${seam.dir}/dependency-report.txt"/>
+		<sequential>
+			<dependencyReport module="@{module}" />
+			<concat append="true" destfile="@{output}">
+				<header>
+					
+					
+-----------------------------------------
+Dependency Tree for @{module}
+*****************************************
+-----------------------------------------
+					
+</header>
+				<fileset file="${tmp.dir}/poms/@{module}-dependency-report.txt"/>
+			</concat>
+		</sequential>
+	</macrodef>
+	
+	<target name="dependencyReport" depends="initpoms" description="Build dependency report for all modules">
+		<delete file="${seam.dir}/dependency-report.txt" />
+		<concat append="true" destfile="${seam.dir}/dependency-report.txt">					
+-----------------------------------------
+Dependencies for Seam ${complete.version}
+*****************************************
+-----------------------------------------
+
+		</concat>
+		<outputDependencyReport module="core" />
+		<outputDependencyReport module="debug" />
+		<outputDependencyReport module="ui" />
+		<outputDependencyReport module="remoting" />
+		<outputDependencyReport module="mail" />
+		<outputDependencyReport module="pdf" />
+		<outputDependencyReport module="excel" />
+		<outputDependencyReport module="rss" />
+		<outputDependencyReport module="ioc" />
+		<outputDependencyReport module="wicket" />
+		<outputDependencyReport module="resteasy" />
+		<outputDependencyReport module="jul" />
+		<echo>Dependency Report written to ${seam.dir}/dependency-report.txt</echo>
+	</target>
+	
+	<target name="initdav">
+		<artifact:install-provider artifactId="wagon-webdav" version="1.0-beta-2"/>
+	</target>
+	
+</project>

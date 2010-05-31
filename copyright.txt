@@ -1,0 +1,32 @@
+JBoss Seam is Copyright 2005-2009, Red Hat Middleware LLC and individual
+contributors. It is licensed under the GNU LGPL except where otherwise
+noted in the source file's header.
+
+A summary of the individual contributors is given below. Any omission should
+be sent to Pete Muir <pmuir@redhat.com>.
+
+SCM Login(s)                         Name                Role
+------------------------------------------------------------------------
+gavin                                Gavin King          Project founder
+pmuir,pete.muir@jboss.org            Pete Muir           Project lead
+dan.j.allen                          Dan Allen
+max.andersen@jboss.com               Max Rydahl Andersen
+jbalunas@redhat.com                  Jay Balunas
+cbauer,christian.bauer@jboss.com     Christian Bauer
+ebernard                             Emmanuel Bernard
+sbryzak2,shane.bryzak@jboss.com      Shane Bryzak
+matt.drees                           Matt Dress
+jguglielmin                          Judy Guglielmin
+jharting                             Jozef Hartinger
+theute                               Thomas Heute
+alesj                                Ales Justin
+nickarls                             Nicklas Karlsson
+manaRH                               Marek Novotny
+jacob.orshalick                      Jacob Orshalick
+cpopetz                              Clint Popetz
+nrichards,norman.richards@jboss.com  Norman Richards
+danielc.roth                         Daniel Roth
+myoungstrom                          Michael Youngstrom
+myuan                                Michael Yuan
+------------------------------------------------------------------------
+* JBoss is a registered trademark of Red Hat Middleware LLC

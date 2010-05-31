@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jboss.embedded</groupId>
+  <artifactId>jboss-embedded-all</artifactId>
+  <version>beta3.SP9</version>
+  <description>The jboss-embedded-all.jar distributed with JBoss Embedded.  This contains all depdencies
+  from JBoss AS that originate in JBoss.  This jar has has the org.jboss.embedded packages split out.</description>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>org.jboss.embedded</groupId>
+  		<artifactId>jboss-embedded</artifactId>
+  		<version>beta3.SP9</version>
+        <exclusions>
+          <exclusion></exclusion>
+        </exclusions>
+  	</dependency>
+  </dependencies>
+</project>

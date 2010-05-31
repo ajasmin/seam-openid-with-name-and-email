@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jboss.seam.embedded</groupId>
+  <artifactId>hibernate-all</artifactId>
+  <version>beta3.SP9</version>
+  <description>The hibernate-all.jar distributed with JBoss Embedded.  This contains Hibernate
+  for running in an EJB3 enviroment (Hibernate, Hibernate Annotations, Hibernate EntityManager, Hibernate Validator, Hibernate Commons Annotations) and Hibernate Search (specific to this seam version of hibernate-all)</description>
+</project>

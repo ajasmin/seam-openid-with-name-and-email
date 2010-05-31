@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.jboss.seam</groupId>
+   <artifactId>jboss-seam-wicket</artifactId>
+   <parent>
+   <groupId>org.jboss.seam</groupId>
+      <artifactId>parent</artifactId>
+      <version>@seam.version@</version>
+   </parent>
+
+   <!-- See parent pom for notes on how to declare dependencies -->
+
+   <dependencies>
+
+      <dependency>
+         <groupId>org.jboss.seam</groupId>
+         <artifactId>jboss-seam</artifactId>
+         <type>ejb</type>
+      </dependency>
+      
+      <dependency>
+         <groupId>org.apache.wicket</groupId>
+         <artifactId>wicket</artifactId>
+      </dependency>
+      
+      <dependency>
+         <groupId>javassist</groupId>
+         <artifactId>javassist</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      
+      <dependency>
+         <groupId>org.apache.wicket</groupId>
+         <artifactId>wicket-ioc</artifactId>
+      </dependency>
+      
+      <dependency>
+         <groupId>org.apache.wicket</groupId>
+         <artifactId>wicket-datetime</artifactId>
+         <optional>true</optional>
+      </dependency>
+      
+      <dependency>
+         <groupId>org.apache.wicket</groupId>
+         <artifactId>wicket-extensions</artifactId>
+         <optional>true</optional>
+      </dependency>
+      
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <optional>true</optional>
+         <exclusions>
+           <exclusion>
+             <groupId>log4j</groupId>
+             <artifactId>log4j</artifactId>
+           </exclusion>
+         </exclusions>
+      </dependency>
+      
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-validator</artifactId>
+         <optional>true</optional>
+      </dependency>
+      		
+      <dependency>
+         <groupId>javax.ejb</groupId>
+         <artifactId>ejb-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+   </dependencies>
+
+</project>

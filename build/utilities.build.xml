@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<!-- Ant build file containing utility targets and macrodefs -->
+
+<!-- This file makes use of the following properties:
+   version
+   patchlevel
+   tmp.dir - temporary build area
+   -->
+<project basedir="." xmlns:artifact="urn:maven-artifact-ant">
+
+	<macrodef name="pomfile">
+		<attribute name="name" />
+		<attribute name="value" />
+		<attribute name="artifactName" default=""/>
+		<attribute name="todir" default="${tmp.dir}/poms" />
+		<attribute name="tofile" default="@{todir}/@{name}" />
+		<sequential>
+			<mkdir dir="@{todir}" />
+			<copy file="@{value}" tofile="@{tofile}" overwrite="on" verbose="false">
+				<filterset>
+					<filter token="seam.version" value="${complete.version}" />
+					<filter token="artifact.name" value="@{artifactName}" />
+				</filterset>
+			</copy>
+			<property name="@{name}" value="@{tofile}" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="dependencies">
+		<attribute name="id" />
+		<attribute name="scope" />
+		<attribute name="pom" />
+		<element name="nested" implicit="true" optional="true" />
+		<sequential>
+			<artifact:dependencies pathId="@{scope}.@{id}.path" filesetId="@{scope}.@{id}.fileset" versionsId="@{scope}.@{id}.versions" useScope="@{scope}" settingsFile="${maven.settings.xml}">
+				<nested />
+				<pom file="@{pom}" settingsFile="${maven.settings.xml}" />
+			</artifact:dependencies>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="inlineDependencies">
+		<attribute name="id" />
+		<attribute name="scope" />
+		<element name="inline" implicit="true"/>
+		<sequential>
+			<artifact:dependencies pathId="@{scope}.@{id}.path" filesetId="@{scope}.@{id}.fileset" versionsId="@{scope}.@{id}.versions" useScope="@{scope}" settingsFile="${maven.settings.xml}">
+				<inline />
+			</artifact:dependencies>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="dependenciesWithSources">
+		<attribute name="id" />
+		<attribute name="scope" />
+		<attribute name="pom" />
+		<sequential>
+			<artifact:dependencies pathId="@{scope}.@{id}.path" filesetId="@{scope}.@{id}.fileset" versionsId="@{scope}.@{id}.versions" useScope="@{scope}" sourcesFilesetId="@{scope}.@{id}.source.fileset" settingsFile="${maven.settings.xml}">
+				<pom file="@{pom}" settingsFile="${maven.settings.xml}" />
+			</artifact:dependencies>
+		</sequential>
+	</macrodef>
+
+	<!--<macrodef name="dependenciesWithSourcesAndJavadoc">
+		<attribute name="id" />
+		<attribute name="scope" />
+		<attribute name="pom" />
+		<sequential>
+			<artifact:dependencies pathId="@{scope}.@{id}.path" filesetId="@{scope}.@{id}.fileset" versionsId="@{scope}.@{id}.versions" useScope="@{scope}" sourcesFilesetId="@{scope}.@{id}.source.fileset" javadocFilesetId="@{scope}.@{id}.javadoc.fileset">
+				<pom file="@{pom}" />
+			</artifact:dependencies>
+		</sequential>
+	</macrodef>-->
+	
+	<macrodef name="install">
+		<attribute name="pom" default="" />
+		<attribute name="jar" default="" />
+		<element name="args" implicit="true" optional="true" />
+		<sequential>
+			<artifact:install file="@{jar}" settingsFile="${maven.settings.xml}">
+				<pom file="@{pom}" settingsFile="${maven.settings.xml}" />
+				<args />
+			</artifact:install>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="deploy">
+		<attribute name="pom" default="" />
+		<attribute name="jar" default="" />
+		<attribute name="unique" default="true" />
+		<attribute name="repositoryId" default="" />
+		<element name="credentials" implicit="true" optional="true" />
+		<sequential>
+			<artifact:deploy file="@{jar}" uniqueVersion="@{unique}">
+				<pom file="@{pom}" settingsFile="${maven.settings.xml}" />
+				<remoteRepository refId="@{repositoryId}">
+					<credentials />
+				</remoteRepository>
+			</artifact:deploy>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="deployWithSources">
+		<attribute name="pom" default="" />
+		<attribute name="jar" default="" />
+		<attribute name="srcjar" />
+		<attribute name="repositoryId" default="" />
+		<element name="credentials" implicit="true" optional="true" />
+		<sequential>
+			<artifact:deploy file="@{jar}" settingsFile="${maven.settings.xml}">
+				<pom file="@{pom}" settingsFile="${maven.settings.xml}" />
+				<remoteRepository refId="@{repositoryId}">
+					<credentials />
+				</remoteRepository>
+				<attach file="@{srcjar}" classifier="sources" />
+			</artifact:deploy>
+		</sequential>
+	</macrodef>
+   
+   <macrodef name="deployWithSourcesAndJavadoc">
+      <attribute name="pom" default="" />
+      <attribute name="jar" default="" />
+      <attribute name="srcjar" />
+      <attribute name="docjar" />
+      <attribute name="repositoryId" default="" />
+      <element name="credentials" implicit="true" optional="true" />
+      <sequential>
+          <artifact:deploy file="@{jar}" settingsFile="${maven.settings.xml}">
+              <pom file="@{pom}" settingsFile="${maven.settings.xml}" />
+              <remoteRepository refId="@{repositoryId}">
+                  <credentials />
+              </remoteRepository>
+              <attach file="@{srcjar}" classifier="sources" />
+              <attach file="@{docjar}" classifier="javadoc" />
+          </artifact:deploy>
+      </sequential>
+   </macrodef>
+	
+	<macrodef name="deployWithAttachment">
+		<attribute name="pom" default="" />
+		<attribute name="jar" default="" />
+		<attribute name="unique" default="true" />
+		<attribute name="attachment" />
+		<attribute name="repositoryId" default="" />
+		<element name="credentials" implicit="true" optional="true" />
+		<sequential>
+			<artifact:deploy file="@{jar}" uniqueVersion="@{unique}" settingsFile="${maven.settings.xml}">
+				<pom file="@{pom}" settingsFile="${maven.settings.xml}" />
+				<remoteRepository refId="@{repositoryId}">
+					<credentials />
+				</remoteRepository>
+				<attach file="@{attachment}" classifier="bin" type="zip"/>
+			</artifact:deploy>
+		</sequential>
+	</macrodef>
+
+	<!-- Copy dependencies from a given pom/scope to a directory, flattening 
+	the directory structure and version information -->
+	<macrodef name="copyDependencies">
+		<attribute name="id" />
+		<attribute name="scope" />
+		<attribute name="pom" />
+		<attribute name="todir" />
+		<sequential>
+			<dependencies id="@{id}" scope="@{scope}" pom="@{pom}" />
+			<copy todir="@{todir}">
+				<fileset refid="@{scope}.@{id}.fileset" />
+				<chainedmapper>
+					<mapper classpathref="maven-ant-tasks.classpath" classname="org.apache.maven.artifact.ant.VersionMapper" from="${@{scope}.@{id}.versions}" to="flatten" />
+					<flattenmapper />
+				</chainedmapper>
+			</copy>
+		</sequential>
+	</macrodef>
+	
+	<!-- Copy dependencies from a given pom/scope to a directory, flattening 
+		the directory structure and version information -->
+	<macrodef name="copyInlineDependencies">
+		<attribute name="id" />
+		<attribute name="scope" />
+		<element name="inline" implicit="true"/>
+		<attribute name="todir" />
+		<sequential>
+			<inlineDependencies id="@{id}" scope="@{scope}">
+				<inline />
+			</inlineDependencies>
+			<copy todir="@{todir}">
+				<fileset refid="@{scope}.@{id}.fileset" />
+				<chainedmapper>
+					<mapper classpathref="maven-ant-tasks.classpath" classname="org.apache.maven.artifact.ant.VersionMapper" from="${@{scope}.@{id}.versions}" to="flatten" />
+					<flattenmapper />
+				</chainedmapper>
+			</copy>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="maven">
+		<attribute name="target" />
+		<attribute name="basedir" />
+		<element name="args" implicit="true" optional="true" />
+		<sequential>
+			<java classname="org.codehaus.classworlds.Launcher" fork="true" dir="@{basedir}">
+				<classpath>
+					<fileset dir="${maven.dir}/boot">
+						<include name="*.jar" />
+					</fileset>
+					<fileset dir="${maven.dir}/bin">
+						<include name="*.*" />
+					</fileset>
+				</classpath>
+				<sysproperty key="classworlds.conf" value="${maven.dir}/bin/m2.conf" />
+				<sysproperty key="maven.home" value="${maven.dir}" />
+				<arg line="-Dseam.version=${complete.version}" />
+				<arg line="--settings ${maven.settings.xml}" />
+                <!--<arg line="-q" />-->
+				<args />
+				<arg line="@{target}" />
+			</java>
+		</sequential>
+	</macrodef>
+
+</project>

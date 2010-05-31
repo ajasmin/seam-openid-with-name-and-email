@@ -1,0 +1,1236 @@
+<?xml version="1.0"?>
+<project name="Seam" default="build" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+
+	<!-- Check that we are using Ant 1.7.0. Not using <antversion> as it wasn't available until 1.7.0. -->
+	<condition property="compatible.ant">
+		<contains string="${ant.version}" substring="1.7.0"/>
+	</condition>
+
+	<fail unless="compatible.ant">You are using ${ant.version}. You must use Ant 1.7.0 to build Seam. Ant 1.7.1 has known bugs.</fail>
+
+	<!-- Name of project and version, used to create filenames -->
+	<property name="Name" value="JBoss Seam" />
+	<property name="name" value="jboss-seam" />
+	
+	<!-- Build resources -->
+	<property name="seam.dir" value="${basedir}" />
+	<import file="${seam.dir}/build/common.build.xml" />
+
+	<property name="schema.version" value="${version}" />
+
+	<!-- Targets -->
+	<property name="classes.dir" value="${tmp.dir}" />
+	<property name="classes.core.dir" value="${classes.dir}/coreclasses" />
+	<property name="classes.pdf.dir" value="${classes.dir}/pdfclasses" />
+	<property name="classes.excel.dir" value="${classes.dir}/excelclasses" />
+	<property name="classes.ioc.dir" value="${classes.dir}/iocclasses" />
+	<property name="classes.mail.dir" value="${classes.dir}/mailclasses" />
+	<property name="classes.rss.dir" value="${classes.dir}/rssclasses" />
+	<property name="classes.debug.dir" value="${classes.dir}/debugclasses" />
+	<property name="classes.wicket.dir" value="${classes.dir}/wicketclasses" />
+	<property name="classes.jul.dir" value="${classes.dir}/julclasses" />
+	<property name="classes.resteasy.dir" value="${classes.dir}/resteasyclasses" />
+	<property name="classes.remoting.dir" value="${classes.dir}/remotingclasses" />
+	<property name="classes.gen.dir" value="${classes.dir}/genclasses" />
+	<property name="classes.test.dir" value="${classes.dir}/testclasses" />
+	<property name="classes.mail.test.dir" value="${classes.dir}/mailtestclasses" />
+	<property name="classes.excel.test.dir" value="${classes.dir}/exceltestclasses" />
+
+	<property name="ui.dir" value="${basedir}/ui" />
+	<property name="seamgen.dir" value="${basedir}/seam-gen" />
+
+	<!-- Source directories -->
+	<property name="src.core.dir" value="src/main" />
+	<property name="src.ui.dir" value="${ui.dir}/src" />
+	<property name="src.pdf.dir" value="src/pdf" />
+	<property name="src.excel.dir" value="src/excel" />
+	<property name="src.ioc.dir" value="src/ioc" />
+	<property name="src.mail.dir" value="src/mail" />
+	<property name="src.debug.dir" value="src/debug" />
+	<property name="src.rss.dir" value="src/rss" />
+	<property name="src.wicket.dir" value="src/wicket" />
+	<property name="src.jul.dir" value="src/interop/jul" />
+	<property name="src.resteasy.dir" value="src/resteasy" />
+	<property name="src.gen.dir" value="src/gen" />
+	<property name="src.remoting.dir" value="src/remoting" />
+	<property name="src.test.dir" value="src/test" />
+	<property name="src.unit.test.dir" value="${src.test.dir}/unit" />
+	<property name="src.mail.unit.test.dir" value="${src.test.dir}/mail/unit" />
+	<property name="src.excel.unit.test.dir" value="${src.test.dir}/excel/unit" />
+
+	<!-- Library directories -->
+	<property name="eejb.conf.dir" value="${basedir}/bootstrap" />
+
+	<!-- Documentation -->
+	<property name="doc.dir" value="doc" />
+	<property name="doc.api.dir" value="${doc.dir}/api" />
+	<property name="doc.ref.dir" value="${doc.dir}/Seam_Reference_Guide" />
+	<property name="javadoc.link" value="http://java.sun.com/j2se/5.0/docs/api" />
+
+	<!-- Distribution targets -->
+	<property name="dist.name" value="${name}-${complete.version}" />
+
+	<property name="dist.location" value="${basedir}/../" />
+	<property name="dist.dir" location="${dist.location}/${dist.name}" />
+	<property name="dist.ui.dir" value="${dist.dir}/ui" />
+	<property name="dist.doc.dir" value="${dist.dir}/doc" />
+	<property name="dist.api.dir" value="${dist.dir}/doc/api" />
+	<property name="dist.ref.dir" value="${dist.dir}/doc/reference" />
+	<property name="dist.src.core.dir" value="${dist.dir}/src/main" />
+	<property name="dist.ui.dir" value="${dist.dir}/ui" />
+	<property name="dist.src.excel.dir" value="${dist.dir}/src/excel" />
+	<property name="dist.src.pdf.dir" value="${dist.dir}/src/pdf" />
+	<property name="dist.src.ioc.dir" value="${dist.dir}/src/ioc" />
+	<property name="dist.src.mail.dir" value="${dist.dir}/src/mail" />
+	<property name="dist.src.rss.dir" value="${dist.dir}/src/rss" />
+	<property name="dist.src.debug.dir" value="${dist.dir}/src/debug" />
+	<property name="dist.src.wicket.dir" value="${dist.dir}/src/wicket" />
+	<property name="dist.src.jul.dir" value="${dist.dir}/src/interop/jul" />
+	<property name="dist.src.resteasy.dir" value="${dist.dir}/src/resteasy" />
+	<property name="dist.src.gen.dir" value="${dist.dir}/src/gen" />
+	<property name="dist.src.remoting.dir" value="${dist.dir}/src/remoting" />
+	<property name="dist.src.test.dir" value="${dist.dir}/src/test" />
+	<property name="dist.lib.dir" value="${dist.dir}/lib" />
+	<property name="dist.eejb.conf.dir" value="${dist.dir}/bootstrap" />
+	<property name="dist.drools.dir" value="${dist.dir}/drools" />
+	<property name="dist.hibernate.dir" value="${dist.dir}/hibernate" />
+	<property name="dist.build.dir" value="${dist.dir}/build" />
+	<property name="dist.seamgen.dir" value="${dist.dir}/seam-gen" />
+	<property name="dist.ui.api.dir" value="${dist.dir}/doc/ui" />
+	
+	<condition property="in.dist.dir">
+		<equals arg1="${basedir}" arg2="${dist.dir}"/>
+	</condition>
+
+	<!-- Tests -->
+
+	<property name="classes.coverage.dir" value="classes/coverage" />
+	<property name="classes.test.core.dir" value="${classes.dir}/test/core" />
+
+	<property name="test.dir" value="${basedir}/test-output" />
+	<property name="report.dir" value="${basedir}/test-report" />
+	<property name="testng.jvmargs" value="-Dfoo" />
+
+	<property name="bootstrap.dir" value="${basedir}/bootstrap" />
+
+	<!-- CI -->
+
+	<property name="quietclean" value="false" />
+
+
+	<property name="javac.debug" value="true" />
+	<property name="javac.deprecation" value="false" />
+
+	<fileset id="eejb.conf" dir="${eejb.conf.dir}">
+		<include name="**/*.*" />
+	</fileset>
+
+	<patternset id="meta.files">
+		<include name="**/*.dtd" />
+		<include name="**/*.xsd" />
+		<include name="**/*.xml" />
+		<include name="**/*.tld" />
+		<include name="**/*.xslt" />
+		<include name="**/*.properties" />
+		<include name="**/*.providers" />
+		<include name="**/*.js" />
+		<include name="**/*.html" />
+		<include name="**/*.xhtml" />
+		<include name="**/spring.*" />
+		<include name="**/*.txt" />
+	</patternset>
+
+	<patternset id="src.files">
+		<!-- include everything we want in the src directory
+            that we didn't want in the jar itself -->
+		<include name="**/*.java" />
+		<include name="**/*.sql" />
+	</patternset>
+
+	<patternset id="refdoc.files">
+		<include name="**/*.css" />
+		<include name="**/*.jpg" />
+		<include name="**/*.gif" />
+		<include name="**/*.png" />
+	</patternset>
+
+	<!-- ########################## BUILD TARGETS ##########################-->
+
+	<target name="init" depends="initpoms" />
+
+	<target name="clean" description="Cleans up the build directory" depends="clean.lib">
+		<delete dir="${classes.dir}" quiet="${quietclean}" />
+		<delete dir="${test.dir}" quiet="${quietclean}" />
+		<delete dir="${report.dir}" quiet="${quietclean}" />
+		<delete dir="${coverage.dir}" quiet="${quietclean}" />
+		<delete dir="${bootstrap.dir}/tmp" quiet="${quietclean}" />
+		<delete dir="${bootstrap.dir}/data" quiet="${quietclean}" />
+		<delete dir="${ui.dir}/target" quiet="${quietclean}"/>
+		<delete dir="${doc.ref.dir}/target" quiet="${quietclean}"/>
+		<delete dir="${seamgen.dir}/icefaces-staging" quiet="${quietclean}"/>
+		<cleanexample name="integration" path="${seam.dir}/src/test/integration" message="" />
+	</target>
+	
+	<target name="clean.lib" if="mavenized.property">
+		<delete dir="${lib.dir}" quiet="${quietclean}" />
+	</target>
+
+	<target name="build" depends="jarcore,jarexcel,jarrss,jarpdf,jarioc,jarmail,jarremoting,jardebug,jargen,jarui,jarwicket, jarjul, jarresteasy" description="Build all distribution .jar files" />
+
+	<target name="select-compiler">
+		<available classname="org.eclipse.jdt.core.JDTCompilerAdapter" property="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+	</target>
+
+
+	<!-- ########################### CORE TARGETS ##########################-->
+
+	<target name="initcore" depends="init">
+		<init classesdir="${classes.core.dir}" srcdir="${src.core.dir}" modulename="core" pom="${core.pom}" />
+		<inlineDependencies id="jbosscache2" scope="compile">
+			<dependency groupId="org.jboss.cache" artifactId="jbosscache-core" version="2.2.0.CR6" />
+	   </inlineDependencies>
+	</target>
+
+	<target name="antlr" depends="initcore" description="Generate ANTLR parser">
+		<mkdir dir="${src.core.dir}/org/jboss/seam/text" />
+		<taskdef name="antlrtask" classname="org.apache.tools.ant.taskdefs.optional.ANTLR">
+			<classpath refid="compile.core.path" />
+		</taskdef>
+		<antlrtask target="seam-text.g" outputdirectory="${src.core.dir}/org/jboss/seam/text">
+			<classpath refid="compile.core.path" />
+		</antlrtask>
+                <move todir="${src.core.dir}/org/jboss/seam/text">
+                    <fileset dir="${src.core.dir}/org/jboss/seam/text">
+                        <include name="*.txt"/>
+                    </fileset>
+                    <mapper type="glob" from="*" to="*-bak"/>
+                </move>
+	</target>
+
+	<target name="compilecore" depends="initcore,select-compiler,antlr">
+		<compile classesdir="${classes.core.dir}" srcdir="${src.core.dir}" classpath="compile.core.path">
+		   <exclude name="org/jboss/seam/cache/JbossCache2Provider*" />
+	   </compile>
+		<!-- Fiddle to make sure we compile the JBossCache2 stuff with JBossCache2" -->
+		<path id="compile.core-jbosscache2.path">
+         <path refid="compile.jbosscache2.path" />
+         <path refid="compile.core.path" />
+         <fileset dir="${classes.core.dir}" />
+      </path>
+		<compile classesdir="${classes.core.dir}" srcdir="${src.core.dir}" classpath="compile.core-jbosscache2.path">
+         <include name="org/jboss/seam/cache/JbossCache2Provider*" />
+      </compile>
+	</target>
+
+	<target name="jarcore" depends="compilecore" description="Build the distribution .jar file using M2 dependency management">
+		<archive classesdir="${classes.core.dir}" module="jboss-seam" pom="${core.pom}" srcdir="${src.core.dir}" />
+		<archive classesdir="${classes.core.dir}" module="jboss-seam-wls-compatible" pom="${core.wls.pom}" srcdir="${src.core.dir}"  outputdir="${lib.dir}/interop">
+			<excludes>
+				<exclude name="org/jboss/seam/async/TimerServiceDispatcher*" />
+			</excludes>
+		</archive>
+	</target>
+
+	<!-- ########################### PDF TARGETS ###########################-->
+
+	<target name="initpdf" depends="init, jarcore, jarui">
+		<init classesdir="${classes.pdf.dir}" srcdir="${src.pdf.dir}" modulename="pdf" pom="${pdf.pom}" />
+	</target>
+
+	<target name="compilepdf" depends="initpdf, select-compiler">
+		<compile classesdir="${classes.pdf.dir}" srcdir="${src.pdf.dir}" classpath="compile.pdf.path" />
+	</target>
+
+	<target name="jarpdf" depends="compilepdf" description="Build the distribution .jar file for the PDF package">
+		<archive classesdir="${classes.pdf.dir}" module="jboss-seam-pdf" pom="${pdf.pom}" srcdir="${src.pdf.dir}" />
+	</target>
+
+	<!-- ########################### EXCEL TARGETS ###########################-->
+
+	<target name="initexcel" depends="init, jarcore, jarui">
+		<init classesdir="${classes.excel.dir}" srcdir="${src.excel.dir}" modulename="excel" pom="${excel.pom}" />
+	</target>
+
+	<target name="compileexcel" depends="initexcel, select-compiler">
+		<compile classesdir="${classes.excel.dir}" srcdir="${src.excel.dir}" classpath="compile.excel.path" />
+	</target>
+
+	<target name="jarexcel" depends="compileexcel" description="Build the distribution .jar file for the Excel package">
+		<archive classesdir="${classes.excel.dir}" module="jboss-seam-excel" pom="${excel.pom}" srcdir="${src.excel.dir}" />
+	</target>
+
+
+		<!-- ########################### RSS TARGETS ###########################-->
+
+	<target name="initrss" depends="init, jarcore, jarui">
+		<init classesdir="${classes.rss.dir}" srcdir="${src.rss.dir}" modulename="rss" pom="${rss.pom}" />
+	</target>
+
+	<target name="compilerss" depends="initrss, select-compiler">
+		<compile classesdir="${classes.rss.dir}" srcdir="${src.rss.dir}" classpath="compile.rss.path" />
+	</target>
+
+	<target name="jarrss" depends="compilerss" description="Build the distribution .jar file for the RSS package">
+		<archive classesdir="${classes.rss.dir}" module="jboss-seam-rss" pom="${rss.pom}" srcdir="${src.rss.dir}" />
+	</target>
+
+
+	<!-- ########################### IOC TARGETS ###########################-->
+
+	<target name="initioc" depends="init, jarcore">
+		<init classesdir="${classes.ioc.dir}" srcdir="${src.ioc.dir}" modulename="ioc" pom="${ioc.pom}" />
+	</target>
+
+	<target name="compileioc" depends="initioc, select-compiler">
+		<javac source="1.5" target="1.5" destdir="${classes.ioc.dir}" srcdir="${src.ioc.dir}" debug="${javac.debug}" deprecation="${javac.deprecation}" nowarn="on">
+			<classpath>
+				<path refid="compile.ioc.path" />
+			</classpath>
+			<exclude name="org/jboss/seam/ioc/microcontainer/**/*" />
+		</javac>
+	</target>
+
+	<target name="jarioc" depends="compileioc" description="Build the distribution .jar file for the IOC package">
+		<archive classesdir="${classes.ioc.dir}" module="jboss-seam-ioc" pom="${ioc.pom}"  srcdir="${src.ioc.dir}"/>
+	</target>
+
+
+	<!-- ########################### MAIL TARGETS ###########################-->
+
+	<target name="initmail" depends="init, jarcore, jarui, jarpdf">
+		<init classesdir="${classes.mail.dir}" srcdir="${src.mail.dir}" modulename="mail" pom="${mail.pom}" />
+	</target>
+
+	<target name="compilemail" depends="initmail, select-compiler">
+		<compile classesdir="${classes.mail.dir}" srcdir="${src.mail.dir}" classpath="compile.mail.path" />
+	</target>
+
+	<target name="jarmail" depends="compilemail" description="Build the distribution .jar file for the Mail package">
+		<archive classesdir="${classes.mail.dir}" module="jboss-seam-mail" pom="${mail.pom}"  srcdir="${src.mail.dir}"/>
+	</target>
+
+
+	<!-- ########################### DEBUG TARGETS ###########################-->
+
+	<target name="initdebug" depends="init, jarcore">
+		<init classesdir="${classes.debug.dir}" srcdir="${src.debug.dir}" modulename="debug" pom="${debug.pom}" />
+	</target>
+
+	<target name="compiledebug" depends="initdebug, select-compiler">
+		<compile classesdir="${classes.debug.dir}" srcdir="${src.debug.dir}" classpath="compile.debug.path" />
+	</target>
+
+	<target name="jardebug" depends="compiledebug" description="Build the distribution .jar file for the Debug package">
+		<archive classesdir="${classes.debug.dir}" module="jboss-seam-debug" pom="${debug.pom}"  srcdir="${src.debug.dir}"/>
+	</target>
+	
+	<!-- ########################### DEBUG TARGETS ###########################-->
+
+	<target name="initwicket" depends="init, jarcore">
+		<init classesdir="${classes.wicket.dir}" srcdir="${src.wicket.dir}" modulename="wicket" pom="${wicket.pom}" />
+	</target>
+
+	<target name="compilewicket" depends="initwicket, select-compiler">
+		<compile classesdir="${classes.wicket.dir}" srcdir="${src.wicket.dir}" classpath="compile.wicket.path" />
+	</target>
+
+	<target name="jarwicket" depends="compilewicket" description="Build the distribution .jar file for the Wicket Integration package">
+		<archive classesdir="${classes.wicket.dir}" module="jboss-seam-wicket" pom="${wicket.pom}"  srcdir="${src.wicket.dir}">
+			<excludes>
+				<exclude name="**/WicketInstrumentationTask*"/>
+			</excludes>
+			<manifestExtras>
+					<attribute name="Premain-Class" value="org.jboss.seam.wicket.ioc.JavassistInstrumentor" />
+			</manifestExtras>
+
+		</archive>
+		<jar jarfile="${lib.dir}/jboss-seam-wicket-ant.jar" basedir="${classes.wicket.dir}">
+			<include name="**/WicketInstrumentationTask*" />
+		</jar>
+    <jar jarfile="${lib.dir}/src/jboss-seam-wicket-ant-sources.jar" basedir="${src.wicket.dir}">
+			  <include name="**/WicketInstrumentationTask.java" />
+	  </jar>
+
+	</target>
+	
+	<!-- ########################### JUL TARGETS ###########################-->
+
+	<target name="initjul" depends="init, jarcore">
+		<init classesdir="${classes.jul.dir}" srcdir="${src.jul.dir}" modulename="jul" pom="${jul.pom}" />
+	</target>
+
+	<target name="compilejul" depends="initjul, select-compiler">
+		<compile classesdir="${classes.jul.dir}" srcdir="${src.jul.dir}" classpath="compile.jul.path" />
+	</target>
+
+	<target name="jarjul" depends="compilejul" description="Build the distribution .jar file for the JUL -> Log4J bridge integration package">
+		<archive classesdir="${classes.jul.dir}" module="jboss-seam-jul" pom="${jul.pom}"  srcdir="${src.jul.dir}" outputdir="${lib.dir}/interop" />
+	</target>
+	
+  <!-- ########################### RESTeasy TARGETS ###########################-->
+
+   <target name="initresteasy" depends="init, jarcore">
+      <init classesdir="${classes.resteasy.dir}" srcdir="${src.resteasy.dir}" modulename="resteasy" pom="${resteasy.pom}" />
+   </target>
+
+   <target name="compileresteasy" depends="initresteasy, select-compiler">
+      <compile classesdir="${classes.resteasy.dir}" srcdir="${src.resteasy.dir}" classpath="compile.resteasy.path" />
+   </target>
+
+   <target name="jarresteasy" depends="compileresteasy" description="Build the distribution .jar file for the resteasy -> Log4J bridge integration package">
+      <archive classesdir="${classes.resteasy.dir}" module="jboss-seam-resteasy" pom="${resteasy.pom}"  srcdir="${src.resteasy.dir}" outputdir="${lib.dir}" />
+   </target>
+
+	<!-- ########################### GEN TARGETS ###########################-->
+
+	<target name="initgen" depends="init">
+		<init classesdir="${classes.gen.dir}" srcdir="${src.gen.dir}" modulename="gen" pom="${gen.pom}" />
+	</target>
+
+	<target name="compilegen" depends="initgen, select-compiler">
+		<compile classesdir="${classes.gen.dir}" srcdir="${src.gen.dir}" classpath="compile.gen.path" />
+	</target>
+
+	<target name="jargen" depends="compilegen" description="Build the distribution .jar file for the gen package">
+		<archive classesdir="${classes.gen.dir}" module="jboss-seam-gen" pom="${gen.pom}"  srcdir="${src.gen.dir}" outputdir="${lib.dir}/gen"/>
+	</target>
+
+
+	<!-- ########################### REMOTING TARGETS ###########################-->
+
+	<target name="initremoting" depends="init, jarcore">
+		<init classesdir="${classes.remoting.dir}" srcdir="${src.remoting.dir}" modulename="remoting" pom="${remoting.pom}" />
+	</target>
+
+	<target name="compileremoting" depends="initremoting, select-compiler">
+		<compile classesdir="${classes.remoting.dir}" srcdir="${src.remoting.dir}" classpath="compile.remoting.path" />
+	</target>
+
+	<target name="jarremoting" depends="compileremoting" description="Build the distribution .jar file for the Remoting package">
+		<archive classesdir="${classes.remoting.dir}" module="jboss-seam-remoting" pom="${remoting.pom}"  srcdir="${src.remoting.dir}"/>
+	</target>
+
+	<!-- ########################### UI TARGETS ###########################-->
+
+	<target name="initui" depends="init, jarcore, jarjul">
+		<dependencies id="ui" scope="compile" pom="${ui.pom}" />
+	</target>
+
+	<target name="jarui" description="Build the distribution .jar file for the UI package based on A4J CDK" depends="initui">
+		<mkdir dir="${dist.dir}" />
+		<cdk target="install" />
+		<copy file="${ui.dir}/target/jboss-seam-ui.jar" tofile="${basedir}/lib/${name}-ui.jar" />
+		<copy file="${ui.dir}/target/jboss-seam-ui-sources.jar" tofile="${basedir}/lib/src/${name}-ui-sources.jar" />
+	</target>
+
+	<!-- ######################## 'EXAMPLE' TARGETS ########################-->
+
+	<target name="cleanexamples" description="Cleans up examples">
+		<cleanexample name="booking" />
+		<cleanexample name="blog" />
+		<cleanexample name="dvdstore" />
+		<cleanexample name="contactlist" />
+		<cleanexample name="seampay" />
+		<cleanexample name="seamspace" />
+		<cleanexample name="mail" />
+		<cleanexample name="ui" />
+		<cleanexample name="spring" />
+		<cleanexample name="itext" />
+		<cleanexample name="openid" />
+		<cleanexample name="excel" />
+		<cleanexample name="rss" />
+		<cleanexample name="messages" />
+		<cleanexample name="numberguess" />
+		<cleanexample name="registration" />
+		<cleanexample name="todo" />
+		<!--<cleanexample name="portal" />-->
+		<cleanexample name="drools" />
+		<cleanexample name="remoting/helloworld" />
+		<cleanexample name="remoting/chatroom" />
+		<!--<cleanexample name="remoting/progressbar" />-->
+		<cleanexample name="remoting/gwt" />
+		<cleanexample name="hibernate" />
+		<cleanexample name="jpa" />
+		<cleanexample name="jee5/booking" />
+		<cleanexample name="jee5/remoting" />
+		<cleanexample name="groovybooking" />
+		<cleanexample name="quartz" />
+		<cleanexample name="wiki" />
+		<cleanexample name="seamdiscs" />
+		<cleanexample name="icefaces" />
+		<cleanexample name="seambay" />
+		<cleanexample name="restbay" />
+		<cleanexample name="nestedbooking" />
+		<cleanexample name="wicket" />
+		<cleanexample name="guice" />
+		<cleanexample name="tasks" />
+	</target>
+
+	<target name="undeployexamples" description="Undeploy all examples">
+		<!-- Undeploy from JBoss -->
+		<undeployexample name="booking" />
+		<undeployexample name="blog" />
+		<undeployexample name="dvdstore" />
+		<undeployexample name="contactlist" />
+		<undeployexample name="seampay" />
+		<undeployexample name="seamspace" />
+		<undeployexample name="itext" />
+		<undeployexample name="openid" />
+		<undeployexample name="excel" />
+		<undeployexample name="rss" />
+		<undeployexample name="mail" />
+		<undeployexample name="ui" />
+		<!--<undeployexample name="spring"" /> />-->
+		<undeployexample name="messages" />
+		<undeployexample name="numberguess" />
+		<undeployexample name="registration" />
+		<undeployexample name="todo" />
+		<undeployexample name="drools" />
+		<undeployexample name="remoting/helloworld" />
+		<undeployexample name="remoting/chatroom" />
+		<!--<undeployexample name="remoting/progressbar" />-->
+		<undeployexample name="remoting/gwt" />
+		<undeployexampleNoTomcat name="groovybooking" />
+		<undeployexample name="quartz" />
+		<callExample path="examples/wiki" target="undeploy" />
+		<undeployexample name="seamdiscs" />
+		<undeployexample name="icefaces" />
+		<undeployexample name="seambay" />
+		<undeployexample name="restbay" />
+		<undeployexample name="nestedbooking" />
+		<undeployexample name="wicket" />
+		<undeployexample name="guice" />
+		<undeployexample name="tasks" />
+	</target>
+
+	<target name="testexamples" description="Run the example tests">
+		<testexample name="booking" />
+		<testexample name="nestedbooking" />
+		<testexample name="dvdstore" />
+		<testexample name="messages" />
+		<testexample name="numberguess" />
+		<testexample name="contactlist" />
+		<testexample name="registration" />
+		<testexample name="todo" />
+		<testexample name="blog" />
+		<testexample name="seamdiscs" />
+		<testexample name="seambay" />
+		<testexample name="restbay" />
+		<testexample name="seamspace" />
+		<testexample name="drools" />
+		<testexample name="mail" />
+		<testexample name="seampay" />
+		<testexample name="itext" />
+		<testexample name="openid" />
+		<testexample name="excel" />
+		<testexample name="rss" />
+		<testexample name="hibernate" />
+		<testexample name="jpa" />
+		<testexample name="quartz" />
+		<testexample name="guice" />
+		<testexample name="tasks" />
+		<ant dir="examples/wiki" target="test" inheritall="false">
+			<property name="test.output.dir" value="${test.dir}/wiki" />
+		</ant>
+		<!--<ant dir="examples/portal" target="test" inheritall="false" />-->
+	</target>
+
+	<!-- ########################## 'ALL' TARGETS ##########################-->
+
+	<target name="cleanall" depends="clean,cleandist,cleanexamples" description="Cleans up everything"/>
+
+	<target name="undeployall" depends="undeployexamples" description="Undeploy all examples"/>
+
+	<target name="testall" depends="test,build,copylib,testexamples" description="Run the core unit tests and all example tests"/>
+
+	<target name="validateall" description="Validate all example XML Configuration Files">
+		<ant antfile="${seam.dir}/build/validate.xml" target="validatexsd"/>
+		<ant dir="examples/booking" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/blog" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/contactlist" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/dvdstore" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/drools" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/excel" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/groovybooking" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/icefaces" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/itext" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/openid" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/mail" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/messages" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/nestedbooking" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/numberguess" target="validateConfiguration" inheritall="false" />
+		<!--<ant dir="examples/quartz" target="validateConfiguration" inheritall="false" />-->
+		<ant dir="examples/registration" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/remoting/chatroom" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/remoting/gwt" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/remoting/helloworld" target="validateConfiguration" inheritall="false" />
+		<!--<ant dir="examples/remoting/progressbar" target="validateConfiguration" inheritall="false" />-->
+		<ant dir="examples/rss" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/seambay" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/restbay" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/seamdiscs" target="validateConfiguration" inheritall="false" />
+		<!--<ant dir="examples/seampay" target="validateConfiguration" inheritall="false" />-->
+		<ant dir="examples/seamspace" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/tasks" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/todo" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/ui" target="validateConfiguration" inheritall="false" />
+		<ant dir="examples/wicket" target="validateConfiguration" inheritall="false" />		
+		<ant dir="examples/guice" target="validateConfiguration" inheritall="false" />		
+		
+	</target>
+
+
+	<!-- ########################## DIST TARGETS ###########################-->
+
+	<target name="cleandist" description="Cleans up the dist directory" unless="in.dist.dir">
+		<delete dir="${dist.dir}" quiet="${quietclean}" />
+	</target>
+
+	<target name="copysource">
+		<copysource destdir="${dist.src.core.dir}" srcdir="${src.core.dir}" />
+		<copysource destdir="${dist.src.pdf.dir}" srcdir="${src.pdf.dir}" />
+		<copysource destdir="${dist.src.rss.dir}" srcdir="${src.rss.dir}" />
+		<copysource destdir="${dist.src.excel.dir}" srcdir="${src.excel.dir}" />
+		<copysource destdir="${dist.src.ioc.dir}" srcdir="${src.ioc.dir}" />
+		<copysource destdir="${dist.src.remoting.dir}" srcdir="${src.remoting.dir}" />
+		<copysource destdir="${dist.src.mail.dir}" srcdir="${src.mail.dir}" />
+		<copysource destdir="${dist.src.debug.dir}" srcdir="${src.debug.dir}" />
+		<copysource destdir="${dist.src.wicket.dir}" srcdir="${src.wicket.dir}" />
+		<copysource destdir="${dist.src.jul.dir}" srcdir="${src.jul.dir}" />
+		<copysource destdir="${dist.src.resteasy.dir}" srcdir="${src.resteasy.dir}" />
+		<copysource destdir="${dist.src.gen.dir}" srcdir="${src.gen.dir}" />
+		<copysource destdir="${dist.src.test.dir}" srcdir="${src.test.dir}" />
+
+		<mkdir dir="${dist.ui.dir}" />
+		<copy todir="${dist.ui.dir}">
+			<fileset dir="${ui.dir}">
+				<include name="src/**/*" />
+				<include name="pom.xml" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copylib" depends="copyseam, copyseamdependencies,copyjbossembedded">
+
+		<copy todir="${dist.eejb.conf.dir}">
+			<fileset dir="${eejb.conf.dir}">
+				<include name="**/*" />
+				<exclude name="tmp/**/*" />
+			</fileset>
+		</copy>
+
+		<copy todir="${dist.lib.dir}">
+			<fileset dir="${lib.dir}">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+			
+		<copy todir="${dist.src.test.dir}">
+         <fileset dir="${src.test.dir}">
+            <include name="**/*.jar" />
+         </fileset>
+      </copy>			
+
+	</target>
+
+	<target name="copybuild">
+		<copy todir="${dist.build.dir}">
+			<fileset dir="${build.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copyexamples">
+      <ant dir="examples" target="copyextradependencies" inheritall="false">
+         <property name="lib.dir" value="${dist.lib.dir}"/>
+         <property name="metawidget-war.lib" value="true"/>
+         <property name="metawidget-ear.lib" value="true"/>
+      </ant>
+		<copy todir="${dist.dir}/examples">
+			<fileset dir="${basedir}/examples">
+				<include name="booking/**/*" />
+				<exclude name="booking/alter.config" />
+				<exclude name="booking/alter.config/**/*" />
+				<exclude name="booking/build.alter.xml" />
+				<include name="hibernate/**/*" />
+				<include name="icefaces/**/*" />
+				<include name="jpa/**/*" />
+				<include name="jee5/**/*" />
+				<include name="blog/**/*" />
+				<include name="contactlist/**/*" />
+				<include name="registration/**/*" />
+				<include name="dvdstore/**/*" />
+				<include name="itext/**/*" />
+				<include name="openid/**/*" />
+				<include name="excel/**/*" />
+				<include name="rss/**/*" />
+				<include name="seambay/**/*" />
+				<include name="restbay/**/*" />
+				<include name="seampay/**/*" />
+				<include name="seamspace/**/*" />
+				<include name="mail/**/*" />
+				<include name="spring/**/*" />
+				<include name="ui/**/*" />
+				<include name="messages/**/*" />
+				<include name="todo/**/*" />
+				<include name="numberguess/**/*" />
+				<include name="groovybooking/**/*" />
+				<include name="guice/**/*" />
+				<include name="seamdiscs/**/*" />
+				<include name="quartz/**/*" />
+				<include name="wiki/**/*" />
+				<!--<include name="portal/**/*" />-->
+				<include name="drools/**/*" />
+				<include name="nestedbooking/**/*" />
+				<include name="metawidget/**/*" />
+				<include name="tasks/**/*" />
+				<include name="wicket/**/*" />
+				<include name="remoting/chatroom/**/*" />
+				<include name="remoting/helloworld/**/*" />
+				<!--<include name="remoting/progressbar/**/*" />-->
+				<include name="remoting/gwt/**/*" />
+				<include name="readme.txt" />
+				<include name="seam-examples.html" />
+				<include name="build.xml" />
+				<exclude name="*/exploded-archives" />
+				<exclude name="*/exploded-archives/**/*" />
+				<exclude name="*/test-build" />
+				<exclude name="*/test-build/**/*" />
+				<exclude name="*/dist" />
+				<exclude name="*/dist/**/*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="copyseamgen">
+		<copy todir="${dist.seamgen.dir}">
+			<fileset dir="${seamgen.dir}">
+				<exclude name="build.properties" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="extras" depends="dependencyReport">
+		<copy file="readme.txt" todir="${dist.dir}" />
+		<copy file="lgpl.txt" todir="${dist.dir}" />
+		<copy file="copyright.txt" todir="${dist.dir}" />
+		<copy file="changelog.txt" todir="${dist.dir}" />
+		<propertyfile file="${dist.dir}/build.properties" comment="See build/sample.build.properties for properties you might want to set">
+			<entry key="mavenized" value="false" />
+			<entry key="qualifier" value="${qualifier}" />
+		</propertyfile>
+		<copy file="build.xml" todir="${dist.dir}" />
+		<copy file="seam" todir="${dist.dir}" />
+		<copy file="seam-text.g" todir="${dist.dir}" />
+		<copy file="seam.bat" todir="${dist.dir}" />
+		<copy todir="${dist.dir}">
+			<fileset dir="${basedir}">
+		      <include name="*migration.txt"/>
+		   </fileset>
+	   </copy>
+	    <copy todir="${dist.dir}/extras">
+	       <fileset dir="${basedir}/extras">
+	          <include name="**/*" />
+	       </fileset>
+	    </copy>
+		<replace file="${dist.dir}/build.xml">
+			<replacetoken>
+				<![CDATA[${name}-${complete.version}]]>
+			</replacetoken>
+			<replacevalue>
+				<![CDATA[${name}-${TODAY}]]>
+			</replacevalue>
+		</replace>
+		<copy file="dependency-report.txt" todir="${dist.dir}" />
+	</target>
+
+
+	<target name="dist" depends="cleandist,build,javadoc,copysource,copylib,copybuild,copyexamples,copyseamgen,refdoc,extras" description="Build everything and package">
+		<zip zipfile="${dist.location}/${dist.name}.zip">
+			<zipfileset prefix="${dist.name}" dir="${dist.dir}" />
+		</zip>
+		<tar tarfile="${dist.location}/${dist.name}.tar.gz" compression="gzip">
+			<tarfileset prefix="${dist.name}" dir="${dist.dir}" />
+		</tar>
+	</target>
+
+
+	<!-- ########################## DOCUMENTATION TARGETS ##########################-->
+
+	<target name="javadoc" description="Compile the Javadoc API documentation to dist dir" depends="initcore">
+
+		<mkdir dir="${dist.api.dir}" />
+		<javadoc classpathref="compile.core.path" destdir="${dist.api.dir}" use="true" protected="true" version="true" windowtitle="${Name} API Documentation" Overview="${doc.api.dir}/package.html" doctitle="${Name} API Documentation" stylesheetfile="${doc.api.dir}/jdstyle.css" link="${javadoc.link}">
+
+			<packageset dir="${src.core.dir}" defaultexcludes="yes">
+				<include name="org/jboss/seam/**" />
+			</packageset>
+
+		</javadoc>
+
+		<cdk target="javadoc:javadoc" />
+
+		<copy file="${doc.api.dir}/package.html" todir="${dist.api.dir}" />
+
+		<copy todir="${dist.ui.api.dir}">
+			<fileset dir="${ui.dir}/target/site">
+				<!--<include name="tlddoc/**"/>-->
+				<include name="apidocs/**" />
+			</fileset>
+		</copy>
+
+	</target>
+
+	<target name="refdoc" description="Generate and copy reference documentation" depends="initpoms">
+		<condition property="maven.build.translations" value="-Dbuild.translations" else="">
+			<isset property="build.translations"/>
+		</condition>
+		<echo file="${doc.ref.dir}/en-US/Version_Info.xml">
+			&lt;releaseinfo&gt;${complete.version}&lt;/releaseinfo&gt;
+		</echo>
+		<copy file="${docs.pom}" tofile="${doc.ref.dir}/pom.xml" overwrite="true"/>
+		<maven target="compile" basedir="${doc.ref.dir}">
+			<jvmarg line="-Xms128m -Xmx512m" />
+			<arg line="${maven.build.translations}" />
+		</maven>
+		<copy todir="${dist.ref.dir}">
+			<fileset dir="${doc.ref.dir}/target/docbook/publish" />
+		</copy>
+	</target>
+
+
+	<!-- ########################### TEST TARGETS ###########################-->
+
+	
+
+
+
+	<target name="unittest" depends="unittestcore, unittestmail, unittestexcel" description="Run the Unit tests" />
+
+	<target name="compiletest" depends="inittestcore,select-compiler,antlr">
+      <compile classesdir="${classes.test.dir}" srcdir="${src.unit.test.dir}" classpath="test.compile.path" />
+   </target>
+	
+  <target name="inittestcore" depends="build">
+      <init classesdir="${classes.test.dir}" srcdir="${src.unit.test.dir}" modulename="core" pom="${core.pom}" scope="test" message="" />
+      <copy todir="${classes.test.core.dir}">
+         <fileset dir="${classes.core.dir}" includes="**/*.*" />
+      </copy>
+      <inlineDependencies scope="compile" id="remoting">
+         <dependency groupId="org.jboss.seam" artifactId="jboss-seam-remoting" version="${complete.version}" />
+      </inlineDependencies>
+      <path id="test.compile.path">
+         <path refid="test.core.path" />
+         <path path="${classes.test.core.dir}" />
+         <path refid="compile.remoting.path" />
+      </path>
+   </target>
+
+	<target name="unittestcore" depends="inittestcore,compiletest,getemma">
+      <inlineDependencies scope="test" id="thirdparty-hibernate">
+         <dependency groupId="org.jboss.seam.embedded" artifactId="thirdparty-all" version="${embedded.version}" />
+      </inlineDependencies>
+		<taskdef resource="testngtasks" classpathref="test.core.path" />
+		<testng outputdir="${test.dir}">
+			<jvmarg value="-Demma.coverage.out.file=${coverage.ec}" />
+			<jvmarg line="-Djava.awt.headless=true" />
+			<classpath>
+				<path path="${classes.test.core.dir}" />
+				<path path="${classes.test.dir}" />
+				<path refid="runtime.emma.path" />
+				<path refid="test.core.path" />
+				<pathelement location="${lib.dir}/jboss-seam-remoting.jar" />
+				<!-- this is added because of conflicts with commons-logging which comes with richfaces-->
+				<path refid="test.thirdparty-hibernate.path" />
+			</classpath>
+			<xmlfileset dir="${classes.test.dir}" includes="**/testng.xml" />
+		</testng>
+		<echo>You can increase the logging by editing bootstrap/log4j.xml</echo>
+	</target>
+	
+
+   <target name="inittestmail" depends="build">
+      <init classesdir="${classes.mail.test.dir}" srcdir="${src.mail.unit.test.dir}" modulename="mail" pom="${mail.pom}" scope="test" message="" />
+      <path id="test.mail.compile.path">
+         <path refid="test.mail.path" />
+         <path path="${classes.mail.test.dir}" />
+      	<path location="${classes.mail.dir}" />
+      </path>
+   </target>
+	
+   <target name="compiletestmail" depends="inittestmail,select-compiler,antlr">
+      <compile classesdir="${classes.mail.test.dir}" srcdir="${src.mail.unit.test.dir}" classpath="test.mail.compile.path" />
+   </target>
+	
+	<target name="unittestmail" depends="inittestmail,compiletestmail,getemma">
+	      <taskdef resource="testngtasks" classpathref="test.mail.path" />
+	      <testng outputdir="${test.dir}">
+	         <jvmarg value="-Demma.coverage.out.file=${coverage.ec}" />
+	         <jvmarg line="-Djava.awt.headless=true" />
+	         <classpath>
+	            <path path="${classes.mail.test.dir}" />
+	         	<path location="${classes.mail.dir}" />
+	            <path refid="runtime.emma.path" />
+	            <path refid="test.mail.path" />
+	         </classpath>
+	         <xmlfileset dir="${classes.mail.test.dir}" includes="**/testng.xml" />
+	      </testng>
+	      <echo>You can increase the logging by editing bootstrap/log4j.xml</echo>
+	   </target>
+
+   <target name="inittestexcel" depends="build">
+      <init classesdir="${classes.excel.test.dir}" srcdir="${src.excel.unit.test.dir}" modulename="excel" pom="${excel.pom}" scope="test" message="" />
+      <path id="test.excel.compile.path">
+         <path refid="test.excel.path" />
+         <path path="${classes.excel.test.dir}" />
+      	<path location="${classes.excel.dir}" />
+      </path>
+   </target>
+	
+   <target name="compiletestexcel" depends="inittestexcel,select-compiler,antlr">
+      <compile classesdir="${classes.excel.test.dir}" srcdir="${src.excel.unit.test.dir}" classpath="test.excel.compile.path" />
+   </target>
+	
+	<target name="unittestexcel" depends="inittestexcel,compiletestexcel,getemma">
+	      <taskdef resource="testngtasks" classpathref="test.excel.path" />
+	      <testng outputdir="${test.dir}">
+	         <jvmarg value="-Demma.coverage.out.file=${coverage.ec}" />
+	         <jvmarg line="-Djava.awt.headless=true" />
+	         <classpath>
+	            <path path="${classes.excel.test.dir}" />
+	         	<path location="${classes.excel.dir}" />
+	            <path refid="runtime.emma.path" />
+	            <path refid="test.excel.path" />
+	         </classpath>
+	         <xmlfileset dir="${classes.excel.test.dir}" includes="**/testng.xml" />
+	      </testng>
+	      <echo>You can increase the logging by editing bootstrap/log4j.xml</echo>
+	   </target>
+	
+	<target name="test" depends="unittest, integrationtest" description="Run Seam Unit Tests and the Seam (core) Integration Tests"/>
+	
+	<target name="integrationtest" description="Run the Seam (core) Inteegration Tests">
+		<testexample name="integration" path="${seam.dir}/src/test/integration" message=""/>
+	</target>
+	
+	<!-- Deprecated -->
+	<target name="testcore" depends="test" />
+
+	<target name="testreport" description="Create a pretty report">
+		<mkdir dir="${report.dir}" />
+		<junitreport todir="${report.dir}">
+			<fileset dir="${test.dir}">
+				<include name="**/*.xml" />
+				<exclude name="**/testng-*.xml" />
+			</fileset>
+			<report format="noframes" todir="${report.dir}" />
+		</junitreport>
+		<echo>Report available at ${report.dir}/junit-noframes.html</echo>
+	</target>
+
+	<target name="copytestoutput">
+		<mkdir dir="${report.dir}/tests" />
+		<copy todir="${report.dir}/tests">
+			<fileset dir="${test.dir}">
+				<include name="**/*.xml" />
+				<exclude name="**/testng-*.xml" />
+			</fileset>
+			<mapper type="flatten" />
+		</copy>
+	</target>
+
+	<target name="instrumentcore" depends="compilecore,getemma">
+		<taskdef resource="emma_ant.properties" classpathref="runtime.emma.path" />
+		<mkdir dir="${coverage.dir}/core" />
+		<emma>
+			<instr instrpath="${classes.core.dir}" mode="overwrite" metadatafile="${coverage.dir}/coveragecore.em">
+				<!-- Exclude packages we don't want coverage for -->
+				<filter excludes="org.jboss.seam.annotations.*" />
+				<filter excludes="org.jboss.seam.test.*" />
+				<filter excludes="*.package-info.java" />
+				<filter excludes="org.jboss.seam.text.*" />	
+			</instr>
+		</emma>
+	</target>
+	
+	<target name="instrumentmail" depends="compilemail,getemma">
+		<taskdef resource="emma_ant.properties" classpathref="runtime.emma.path" />
+		<mkdir dir="${coverage.dir}/mail" />
+		<emma>
+			<instr instrpath="${classes.mail.dir}" mode="overwrite" metadatafile="${coverage.dir}/coveragemail.em">
+				<filter excludes="*.package-info.java" />
+			</instr>
+		</emma>
+	</target>
+
+	<!-- Deprecated -->
+	<target name="coverage" depends="instrumentcore, instrumentmail, testall, coveragereport" />
+	
+	<target name="coveragereport" depends="getemma" description="Create the coverage report">
+		<taskdef resource="emma_ant.properties" classpathref="runtime.emma.path" />
+		<emma>
+			<report depth="method">
+				<sourcepath>
+					<path location="${src.core.dir}" />
+					<path location="${src.mail.dir}" />
+				</sourcepath>
+				<infileset dir="${coverage.dir}" includes="coveragecore.em,coverage.ec,coveragemail.em" />
+				<html outfile="${report.dir}/coverage.html" />
+				<xml outfile="${report.dir}/coverage.xml" />
+			</report>
+		</emma>
+		<echo>Code coverage report for core classes available at ${report.dir}/coverage.html</echo>
+	</target>
+	
+	<target name="coverageall" depends="instrumentcore, instrumentmail, testall, coveragereport" description="Run all unit tests with coverage" />
+
+
+	<!-- ########################## MACRO DEFS ##########################-->
+
+	<macrodef name="init">
+		<attribute name="modulename" />
+		<attribute name="classesdir" />
+		<attribute name="srcdir" />
+		<attribute name="pom" />
+		<attribute name="message" default="Build ${Name} @{modulename} ${version}" />
+		<attribute name="scope" default="compile" />
+		<sequential>
+			<echo message="@{message}" />
+			<mkdir dir="@{classesdir}" />
+			<copy todir="@{classesdir}">
+				<fileset dir="@{srcdir}">
+					<patternset refid="meta.files" />
+				</fileset>
+			</copy>
+			<dependencies id="@{modulename}" scope="@{scope}" pom="@{pom}">
+			</dependencies>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="compile">
+		<attribute name="classesdir" />
+		<attribute name="srcdir" />
+		<attribute name="classpath" />
+		<element name="javac.nested" optional="true" implicit="true"/>
+		<sequential>
+			<javac source="1.5" target="1.5" destdir="@{classesdir}" debug="${javac.debug}" deprecation="${javac.deprecation}" nowarn="on" srcdir="@{srcdir}" classpathref="@{classpath}" >
+				<javac.nested />
+			</javac>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="archive">
+		<attribute name="module" />
+		<attribute name="classesdir" />
+		<attribute name="pom" />
+		<attribute name="srcdir" />
+		<attribute name="outputdir" default="${lib.dir}" />
+		<element name="excludes" optional="true"/>
+		<element name="manifestExtras" optional="true"/>
+		<sequential>
+			<mkdir dir="@{outputdir}" />
+			<mkdir dir="@{outputdir}/src" />
+			<jar jarfile="@{outputdir}/@{module}.jar" basedir="@{classesdir}">
+				<include name="**/*.class" />
+				<exclude name="**/test/*.class" />
+				<patternset refid="meta.files" />
+				<excludes />
+				<manifest>
+					<attribute name="Seam-Version" value="${complete.version}" />
+					<attribute name="Implementation-Version" value="${complete.version}" />
+					<attribute name="Specification-Version" value="${complete.version}" />
+					<attribute name="Specification-Title" value="@{module}" />
+					<attribute name="Specification-Vendor" value="JBoss" />
+					<attribute name="Implementation-Title" value="@{module}" />
+					<attribute name="Implementation-Vendor" value="JBoss" />
+					<manifestExtras />
+				</manifest>
+			</jar>
+			<jar jarfile="@{outputdir}/src/@{module}-sources.jar" basedir="@{srcdir}">
+				<include name="**/*.java" />
+				<exclude name="**/test/*.java" />
+				<patternset refid="meta.files" />
+				<excludes />
+				<manifest>
+					<attribute name="Seam-Version" value="${complete.version}" />
+					<attribute name="Implementation-Version" value="${complete.version}" />
+					<attribute name="Specification-Version" value="${complete.version}" />
+               <attribute name="Specification-Title" value="Seam @{module}" />
+               <attribute name="Specification-Vendor" value="JBoss" />
+               <attribute name="Implementation-Title" value="Seam @{module}" />
+               <attribute name="Implementation-Vendor" value="JBoss" />
+				</manifest>
+			</jar>
+			<install jar="@{outputdir}/@{module}.jar" pom="@{pom}">
+				<attach file="@{outputdir}/src/@{module}-sources.jar" classifier="sources" />
+			</install>
+		</sequential>
+	</macrodef>
+
+	<!-- Call out to maven to build Seam ui based on the cdk-->
+	<macrodef name="cdk">
+		<attribute name="target" />
+		<sequential>
+			<pomfile name="ui.pom" value="${build.dir}/ui.pom.xml" tofile="${ui.dir}/pom.xml" />
+			<maven target="@{target}" basedir="${ui.dir}" />
+			<delete file="${ui.dir}/pom.xml" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="copysource">
+		<attribute name="destdir" />
+		<attribute name="srcdir" />
+		<sequential>
+			<mkdir dir="@{destdir}" />
+			<copy todir="@{destdir}">
+				<fileset dir="@{srcdir}">
+					<patternset refid="src.files" />
+				</fileset>
+				<fileset dir="@{srcdir}">
+					<patternset refid="meta.files" />
+				</fileset>
+			</copy>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="copylib">
+		<attribute name="fileset" />
+		<attribute name="versions" />
+		<sequential>
+			<copy todir="${dist.lib.dir}" verbose="on">
+				<fileset refid="@{fileset}">
+					<!-- Need to exclude jboss-seam-* -->
+					<!--<exclude name="**/jboss-seam*.jar" />-->
+				</fileset>
+				<mapper classpathref="maven-ant-tasks.classpath" classname="org.apache.maven.artifact.ant.VersionMapper" from="@{versions}" to="flatten" />
+			</copy>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="cleanexample">
+		<attribute name="name" />
+		<attribute name="path" default="examples/@{name}" />
+		<attribute name="message" default="Cleaning on @{name} example" />
+		<sequential>
+			<echo>@{message}</echo>
+			<callExample path="@{path}" target="clean" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="undeployexample">
+		<attribute name="name" />
+		<attribute name="path" default="examples/@{name}" />
+		<sequential>
+			<echo>Undeploying @{name} example</echo>
+			<callExample path="@{path}" target="undeploy" />
+			<callExample path="@{path}" target="tomcat.undeploy" />
+			<callExample path="@{path}" target="unexplode" />
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="undeployexampleNoTomcat">
+			<attribute name="name" />
+			<attribute name="path" default="examples/@{name}" />
+			<sequential>
+				<echo>Undeploying @{name} example</echo>
+				<callExample path="@{path}" target="undeploy" />
+				<callExample path="@{path}" target="unexplode" />
+			</sequential>
+		</macrodef>
+
+	<macrodef name="testexample">
+		<attribute name="name" />
+		<attribute name="path" default="examples/@{name}" />
+		<attribute name="message" default="Running tests on @{name} example" />
+		<sequential>
+			<echo>@{message}</echo>
+			<callExample path="@{path}" target="test" />
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="callExample">
+		<attribute name="path" />
+		<attribute name="target" />
+		<sequential>
+			<ant dir="@{path}" target="@{target}" inheritall="false">
+				<propertyset>
+					<propertyref name="initpomsdone" />
+					<propertyref name="copyseamdone" />
+					<propertyref name="copyseamdependenciesdone" />
+					<propertyref name="copyjbossembeddeddone" />
+					<propertyref name="core.pom" />
+					<propertyref name="root.pom" />
+					<propertyref name="parent.pom" />
+					<propertyref name="ui.pom" />
+					<propertyref name="remoting.pom" />
+					<propertyref name="gen.pom" />
+					<propertyref name="pdf.pom" />
+					<propertyref name="excel.pom" />
+					<propertyref name="rss.pom" />
+					<propertyref name="ioc.pom" />
+					<propertyref name="mail.pom" />
+					<propertyref name="debug.pom" />
+					<propertyref name="wicket.pom" />
+					<propertyref name="resteasy.pom" />
+					<propertyref name="testng.jvmargs"/>
+				</propertyset>
+			</ant>
+		</sequential>
+	</macrodef>
+
+	<target name="downloadDependenciesSources" description="Download source jars for all dependencies" depends="init">
+		<dependenciesWithSources id="core" scope="compile" pom="${core.pom}" />
+		<dependenciesWithSources id="debug" scope="compile" pom="${debug.pom}" />
+		<dependenciesWithSources id="wicket" scope="compile" pom="${wicket.pom}" />
+		<dependenciesWithSources id="jul" scope="compile" pom="${jul.pom}" />
+		<dependenciesWithSources id="resteasy" scope="compile" pom="${resteasy.pom}" />
+		<dependenciesWithSources id="gen" scope="compile" pom="${gen.pom}" />
+		<dependenciesWithSources id="ioc" scope="compile" pom="${ioc.pom}" />
+		<dependenciesWithSources id="mail" scope="compile" pom="${mail.pom}" />
+		<dependenciesWithSources id="pdf" scope="compile" pom="${pdf.pom}" />
+		<dependenciesWithSources id="excel" scope="compile" pom="${excel.pom}" />
+		<dependenciesWithSources id="rss" scope="compile" pom="${rss.pom}" />
+		<dependenciesWithSources id="remoting" scope="compile" pom="${remoting.pom}" />
+		<dependenciesWithSources id="ui" scope="compile" pom="${ui.pom}" />
+	</target>
+	
+	<target name="eclipseclasspath" depends="init, jargen,antlr" description="Update eclipse classpath">
+		<path id="seam-gen.path" path="${seam.dir}/lib/gen/jboss-seam-gen.jar" />
+
+	    <taskdef name="eclipseClasspath" 
+	        classname="org.jboss.seam.tool.EclipseClasspathTask" 
+	        classpathref="seam-gen.path"/>
+		<dependencies id="core" scope="compile" pom="${core.pom}" />
+		<dependencies id="debug" scope="compile" pom="${debug.pom}" />
+		<dependencies id="wicket" scope="compile" pom="${wicket.pom}" />
+		<dependencies id="jul" scope="compile" pom="${jul.pom}" />
+		<dependencies id="resteasy" scope="compile" pom="${resteasy.pom}" />
+		<dependencies id="gen" scope="compile" pom="${gen.pom}" />
+		<dependencies id="ioc" scope="compile" pom="${ioc.pom}" />
+		<dependencies id="mail" scope="compile" pom="${mail.pom}" />
+		<dependencies id="pdf" scope="compile" pom="${pdf.pom}" />
+		<dependencies id="excel" scope="compile" pom="${excel.pom}" />
+		<dependencies id="rss" scope="compile" pom="${rss.pom}" />
+		<dependencies id="remoting" scope="compile" pom="${remoting.pom}" />
+		<dependencies id="ui" scope="compile" pom="${ui.pom}" />
+		<eclipseClasspath tofile=".classpath" file="${build.dir}/classpath.tmpl" filterProperty="automagic.classpath.entries">
+			<path refid="compile.core.path" />
+			<path refid="compile.debug.path" />
+			<path refid="compile.gen.path" />
+			<path refid="compile.ioc.path" />
+			<path refid="compile.mail.path" />
+			<path refid="compile.pdf.path" />
+			<path refid="compile.excel.path" />
+			<path refid="compile.rss.path" />
+			<path refid="compile.remoting.path" />
+			<path refid="compile.ui.path" />
+			<path refid="compile.jul.path" />
+			<path refid="compile.resteasy.path" />
+			<path refid="compile.wicket.path" />
+		</eclipseClasspath>
+	</target>
+
+
+
+</project>

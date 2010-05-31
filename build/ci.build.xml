@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<!-- Continuous integration related targets -->
+<project name="Seam2 Continuous Integration Support" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+
+	<property name="qualifier" value="-SNAPSHOT" />
+	<property file="default.build.properties" />
+	<property file="build.properties" />
+
+	<property name="seam.dir" value="${basedir}/../" />
+	<property name="dist.location" value="${seam.dir}/dist" />
+	<property name="doc.ref.dir" value="${seam.dir}/doc/Seam_Reference_Guide" />
+	
+	<property name="maven.settings.xml" location="ci.settings.xml" />
+
+	<import file="common.build.xml" />
+	
+	<artifact:remoteRepository id="snapshots.jboss.org" url="dav:https://snapshots.jboss.org/maven2">
+		<authentication username="hudson-services" password="${snapshots.password}" />
+	</artifact:remoteRepository>
+	
+	<target name="deploySeamSnapshot" description="Deploy a Seam snapshot to snapshots.jboss.org" depends="initdav, initpoms">
+		<deploySnapshotPom pom="${root.pom}" />
+		<deploySnapshotPom pom="${parent.pom}" />
+		<deploySnapshot pom="${core.pom}" jar="${lib.dir}/jboss-seam.jar" srcjar="${lib.dir}/src/jboss-seam-sources.jar" />
+		<deploySnapshot pom="${debug.pom}" jar="${lib.dir}/jboss-seam-debug.jar" srcjar="${lib.dir}/src/jboss-seam-debug-sources.jar"/>
+		<deploySnapshot pom="${jul.pom}" jar="${lib.dir}/interop/jboss-seam-jul.jar" srcjar="${lib.dir}/interop/src/jboss-seam-jul-sources.jar"/>
+		<deploySnapshot pom="${wicket.pom}" jar="${lib.dir}/jboss-seam-wicket.jar" srcjar="${lib.dir}/src/jboss-seam-wicket-sources.jar"/>
+		<deploySnapshot pom="${resteasy.pom}" jar="${lib.dir}/jboss-seam-resteasy.jar" srcjar="${lib.dir}/src/jboss-seam-resteasy-sources.jar"/>
+		<deploySnapshot pom="${gen.pom}" jar="${lib.dir}/gen/jboss-seam-gen.jar" srcjar="${lib.dir}/gen/src/jboss-seam-gen-sources.jar"/>
+		<deploySnapshot pom="${ioc.pom}" jar="${lib.dir}/jboss-seam-ioc.jar" srcjar="${lib.dir}/src/jboss-seam-ioc-sources.jar"/>
+		<deploySnapshot pom="${mail.pom}" jar="${lib.dir}/jboss-seam-mail.jar" srcjar="${lib.dir}/src/jboss-seam-mail-sources.jar"/>
+		<deploySnapshot pom="${pdf.pom}" jar="${lib.dir}/jboss-seam-pdf.jar" srcjar="${lib.dir}/src/jboss-seam-pdf-sources.jar"/>
+		<deploySnapshot pom="${excel.pom}" jar="${lib.dir}/jboss-seam-excel.jar" srcjar="${lib.dir}/src/jboss-seam-excel-sources.jar"/>
+		<deploySnapshot pom="${rss.pom}" jar="${lib.dir}/jboss-seam-rss.jar" srcjar="${lib.dir}/src/jboss-seam-rss-sources.jar"/>
+		<deploySnapshot pom="${remoting.pom}" jar="${lib.dir}/jboss-seam-remoting.jar" srcjar="${lib.dir}/src/jboss-seam-remoting-sources.jar"/>
+		<deploySnapshot pom="${ui.pom}" jar="${lib.dir}/jboss-seam-ui.jar" srcjar="${lib.dir}/src/jboss-seam-ui-sources.jar"/>
+	</target>
+
+	<target name="tests">
+		<build target="cleanall" />
+		<build target="coverageall" />
+		<build target="copytestoutput" />
+		<build target="testreport" />
+	</target>
+
+	<target name="snapshot">
+		<build target="cleanall" />
+		<build target="dist" />
+		
+		<ant target="deploySeamSnapshot" antfile="${ant.file}" inheritall="false" inheritrefs="false" dir=".">
+			<propertyset>
+				<propertyref name="ant.version"/>
+			</propertyset>
+			<property name="qualifier" value="-SNAPSHOT" />
+		</ant>
+		<ant target="deployExamplesSnapshot" antfile="${ant.file}" inheritall="false" inheritrefs="false" dir=".">
+			<propertyset>
+				<propertyref name="ant.version"/>
+			</propertyset>
+			<property name="qualifier" value="-SNAPSHOT" />
+		</ant>
+		<ant target="tests" antfile="${ant.file}" inheritall="false" inheritrefs="false" dir=".">
+			<propertyset>
+				<propertyref name="ant.version"/>
+			</propertyset>
+			<property name="qualifier" value="-SNAPSHOT" />
+		</ant>
+	</target>
+	
+	<target name="justSnapshot">
+      <build target="cleanall" />
+		<build target="dist" />
+      
+      <ant target="deploySeamSnapshot" antfile="${ant.file}" inheritall="false" inheritrefs="false" dir=".">
+			<propertyset>
+				<propertyref name="ant.version"/>
+			</propertyset>
+			<property name="qualifier" value="-SNAPSHOT" />
+      </ant>
+		<ant target="deployExamplesSnapshot" antfile="${ant.file}" inheritall="false" inheritrefs="false" dir=".">
+			<propertyset>
+				<propertyref name="ant.version"/>
+			</propertyset>
+			<property name="qualifier" value="-SNAPSHOT" />
+      </ant>
+   </target>
+	
+	<target name="snapshotDocumentation">
+		<build target="cleanall" />
+	   <build target="refdoc">
+         <properties>
+            <property name="build.translations" value="true" />
+         </properties>
+      </build>
+		<ant target="deployDocumentation" antfile="${ant.file}" inheritall="false" inheritrefs="false" dir=".">
+			<propertyset>
+				<propertyref name="ant.version"/>
+			</propertyset>
+			<property name="qualifier" value="-SNAPSHOT" />
+      </ant>
+	</target>
+	
+	<target name="deployExamplesSnapshot" depends="initdav">
+		<deployExample name="booking" repositoryId="snapshots.jboss.org" />
+		<deployExampleNoDs name="numberguess" repositoryId="snapshots.jboss.org" />
+		<deployExampleNoDs name="jpa" distdir="dist-jboss" type="war" repositoryId="snapshots.jboss.org" />
+		<deployExample name="dvdstore" path="${seam.dir}/examples/dvdstore" repositoryId="snapshots.jboss.org" />
+	</target>
+	
+	<target name="deployDocumentation" depends="initdav, initpoms">
+		<artifact:deploy uniqueVersion="false" file="${docs.pom}" settingsFile="${maven.settings.xml}">
+			<pom file="${docs.pom}" settingsFile="${maven.settings.xml}"/>
+			<remoteRepository refId="snapshots.jboss.org" />
+			<attach file="${doc.ref.dir}/target/docbook/publish/en-US/pdf/seam_reference.pdf" classifier="en-US" type="pdf" />
+			<attach file="${doc.ref.dir}/target/docbook/publish/fr-FR/pdf/seam_reference.pdf" classifier="fr-FR" type="pdf" />
+			<attach file="${doc.ref.dir}/target/docbook/publish/it-IT/pdf/seam_reference.pdf" classifier="it-IT" type="pdf" />
+			<attach file="${doc.ref.dir}/target/docbook/publish/ja-JP/pdf/seam_reference.pdf" classifier="ja-JP" type="pdf" />
+		</artifact:deploy>
+	</target>
+
+	<macrodef name="build">
+		<attribute name="target" />
+      <attribute name="testngjvmargs" default="" />
+		<element name="properties" optional="true" />
+		<sequential>
+			<ant antfile="${seam.dir}/build.xml" target="@{target}" inheritall="false" inheritrefs="false" dir="../">
+				<propertyset>
+					<propertyref name="ant.version"/>
+				</propertyset>
+				<property name="dist.location" value="${dist.location}" />
+				<property name="qualifier" value="-SNAPSHOT" />
+				<property name="quietclean" value="true" />
+            	<property name="testng.jvmargs" value="@{testngjvmargs}" />
+				<property name="maven.settings.xml" value="${maven.settings.xml}" />
+				<properties />
+			</ant>
+		</sequential>
+	</macrodef>
+
+    <macrodef name="deploySnapshotPom">
+        <attribute name="pom" />
+        <sequential>
+            <artifact:deploy uniqueVersion="true">
+                <pom file="@{pom}" settingsFile="${maven.settings.xml}"/>
+                <remoteRepository refid="snapshots.jboss.org" />
+            </artifact:deploy>
+        </sequential>
+    </macrodef>
+
+	<macrodef name="deploySnapshot">
+		<attribute name="pom" />
+		<attribute name="jar" />
+        <attribute name="srcjar" />
+		<sequential>
+			<artifact:deploy file="@{jar}" uniqueVersion="true">
+				<pom file="@{pom}" settingsFile="${maven.settings.xml}" />
+                <attach file="@{srcjar}" classifier="sources" />
+				<remoteRepository refid="snapshots.jboss.org" />
+			</artifact:deploy>
+		</sequential>
+	</macrodef>
+
+</project>

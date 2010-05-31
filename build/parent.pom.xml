@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.jboss.seam</groupId>
+  <artifactId>parent</artifactId>
+  <url>http://jboss.com/products/seam</url>
+  <version>@seam.version@</version>
+  <name>JBoss Seam</name>
+  <packaging>pom</packaging>
+  <parent>
+    <groupId>org.jboss.seam</groupId>
+    <artifactId>root</artifactId>
+    <version>@seam.version@</version>
+  </parent>
+  
+  <organization>
+    <name>JBoss</name>
+    <url>http://www.jboss.org</url> 
+  </organization>
+  
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.1</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  
+  <!-- 
+    Recommendations for dependency scope
+    
+    * optional - this library is needed only if you use a feature of 
+                 the module which requires it.  You can use the module without
+                 needing this library on the classpath. A library should only
+                 be marked non-optional if it is used by > 95% of users of the
+                 module OR won't break the user's application if included and
+                 not needed/another implementation is used.
+                 
+    * provided - this is something that is part of the Java EE 5 specification.
+                 If it is included in the archive, things will break. Candidates
+                 include JSF, Servlet API, JSP API, EL, JPA API. Hibernate 
+                 would NOT be on this list since it is a JPA implementation and
+                 not in non-JBoss AS application servers 
+  -->
+
+</project>
