@@ -2,7 +2,7 @@ Seam OpenID sample moded for accessing user attributes
 ------------------------------------------------------
 
 This is an OpenID sample from the [Seam Framework][1] modified so as to automatically
-retrieve user attributes during the sign-on process.
+retrieve user attributes during the login process.
 
 The main component of this sample is the [OpenIdAx][3] class (a sightly modified
 version of the [OpenId class][2] in Seam).
