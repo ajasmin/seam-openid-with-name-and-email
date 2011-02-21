@@ -14,7 +14,7 @@ Though each provider only support a subset of these attributes.
 The application UI was also changed to display more information about the active user 
 and to sign the Wall Posts with the poster *name* and *email address* if they're available.
 
-![Screenshot](http://github.com/ajasmin/seam-openid-with-name-and-email/raw/master/screenshot.png)
+![Screenshot](https://github.com/ajasmin/seam-openid-with-name-and-email/raw/master/screenshot.png)
 
 The old openid4java jar file included in the 2.2.0.GA Seam distribution was also replaced
 by a newer 0.9.5.593 version because the original had a number of issues.
